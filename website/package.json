@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "dev": "gatsby develop",
-    "build": "gatsby build",
+    "build": "gatsby build --prefix-paths",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "deduplicate": "npx yarn-deduplicate yarn.lock",
