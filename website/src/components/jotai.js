@@ -6,7 +6,7 @@ export const Jotai = ({ isDocsPage = false, small = false, ...rest }) => {
   return (
     <div {...rest}>
       <Headline mainTitle={!isDocsPage}>
-        <Link to="/" className="inline-block rounded-lg focus:ring-offset-4">
+        <Link to="/jotai-docs-cn/" className="inline-block rounded-lg focus:ring-offset-4">
           <Logo
             className={cx(
               isDocsPage
