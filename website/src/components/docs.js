@@ -24,7 +24,7 @@ export const Docs = ({ className = '', ...rest }) => {
             {section.contents.map((doc, index) => (
               <li key={index}>
                 <Link
-                  to={`/docs/${doc.slug}`}
+                  to={`/jotai-docs-cn/docs/${doc.slug}`}
                   onClick={() => setIsMenuOpen(false)}
                   className="relative -left-3 inline-block rounded border border-transparent px-2 py-1 text-lg hover:!border-blue-200 hover:bg-blue-100 dark:hover:!border-teal-800 dark:hover:bg-teal-950"
                   activeClassName="!border-blue-200 dark:!border-teal-900 bg-blue-100 dark:bg-teal-950"
