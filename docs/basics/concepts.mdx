@@ -3,28 +3,28 @@ title: 概念
 nav: 1.01
 ---
 
-Jotai is a library that will make you return to the basics of React development & keep everything simple.
+Jotai 是一个库，可以让你回到 React 开发的基础并让一切变得简单。
 
-### From scratch
+### 从头开始
 
-Before trying to compare Jotai with what we may have known previously, let's just dive straight into something very simple.
+在尝试将 Jotai 与我们之前可能已知的内容进行比较之前，让我们直接深入了解一些非常简单的内容。
 
-The React world is very much like our world, it's a big set of small entities, we call them components, and we know that they have their own state. Structuring your components to interact altogether will create your app.
+React 世界非常像我们的世界，它是一大堆小实体，我们称它们为组件，我们知道它们有自己的状态。 构建您的组件以完全交互将创建您的应用程序。
 
-Now, the Jotai world also has its small entities, atoms, and they also have their state. Composing atoms will create your app state!
+现在，Jotai 世界也有它的小实体、原子，它们也有它们的状态。 组合原子将创建您的应用程序状态！
 
-Jotai considers anything to be an atom, so you may say: `Huh, I need objects and arrays, filter them and then sort them out`.
-And here's the beauty of it, Jotai gracefully lets you create dumb atoms derivated from even more dumb atoms.
+Jotai 认为任何东西都是一个原子，所以你可能会说：“嗯，我需要对象和数组，过滤它们然后整理它们”。
+这就是它的美妙之处，Jotai 优雅地让您创建从更多傻瓜原子派生的傻瓜原子。
 
-If, for example, I have a page with 2 tabs: online friends and offline friends.
-I will have 2 atoms simply derivating from a common, dumber source.
+例如，如果我有一个包含 2 个选项卡的页面：在线好友和离线好友。
+我将有 2 个原子，它们只是从一个普通的、傻瓜的来源中衍生出来的。
 
 ```js
-const dumbAtom = atom([{ name: 'Friend 1', online: false }])
-const onlineAtom = atom((get) => get(dumbAtom).filter((item) => item.online))
-const offlineAtom = atom((get) => get(dumbAtom).filter((item) => !item.online))
+const dumbAtom = atom([{ name: "Friend 1", online: false }]);
+const onlineAtom = atom((get) => get(dumbAtom).filter((item) => item.online));
+const offlineAtom = atom((get) => get(dumbAtom).filter((item) => !item.online));
 ```
 
-And you could keep going on complexity forever.
+你可以永远继续复杂化。
 
-Another incredible feature of Jotai is the built-in ability to suspend when using asynchronous atoms. This is a relatively new features that yet needs to get experimented more, but definitely the future of how we build React apps. [Check out the docs](https://reactjs.org/blog/2022/03/29/react-v18.html#new-suspense-features) for more info.
+Jotai 的另一个令人难以置信的特性是在使用异步原子时内置的 suspend 能力。 这是一个相对较新的特性，还需要进行更多的试验，但绝对是我们构建 React 应用程序的未来。 [查看文档](https://reactjs.org/blog/2022/03/29/react-v18.html#new-suspense-features) 了解更多信息。

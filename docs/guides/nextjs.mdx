@@ -6,11 +6,11 @@ nav: 3.04
 
 ## Hydration
 
-Jotai has support for hydration of atoms with `useHydrateAtoms`. The documentation for the hook can be seen [here](../utils/use-hydrate-atoms.mdx).
+Jotai 使用 `useHydrateAtoms` 支持原子 Hydration。 hook 的文档可以在这里看到。 [here](../utils/use-hydrate-atoms.mdx).
 
-## Sync with router
+## 与路由同步
 
-It's possible to sync Jotai with the router. You can achieve this with `atomWithHash`:
+可以将 Jotai 与路由同步。 您可以使用 `atomWithHash` 实现这一点：
 
 ```js
 const pageAtom = atomWithHash('page', 1, {
@@ -26,13 +26,16 @@ const pageAtom = atomWithHash('page', 1, {
 })
 ```
 
-This way you have full control over what [router event](https://nextjs.org/docs/api-reference/next/router#routerevents) you want to subscribe to.
+通过这种方式，您可以完全控制要订阅的[路由事件](https://nextjs.org/docs/api-reference/next/router#routerevents)。
 
-## You can't return promises in server side rendering
+## 您不能在服务器端渲染中返回 promises
 
 It's important to note that you can't return promises with SSR - However, it's possible to guard against it inside the atom definition.
 
 If possible use `useHydrateAtoms` to hydrate values from the server.
+重要的是要注意，您不能使用 SSR 返回 Promise，但是，可以在原子定义中防止它。
+
+如果可能，使用 `useHydrateAtoms` 来混合来自服务器的值。
 
 ```js
 const postData = atom((get) => {
@@ -46,13 +49,13 @@ const postData = atom((get) => {
 
 ## Provider
 
-Because of the nature of SSR, your app can have more instances existing in JS memory in the same time. You need to wrap your app inside a `Provider` (view more details [in the Core section](../api/core.mdx)) so that each instance has its own state and will not interfere with previous values from a default store (provider-less mode).
+由于 SSR 的性质，您的应用程序可以同时在 JS 内存中存在更多实例。 您需要将您的应用程序包装在一个 `Provider` 中（查看更多详细信息 [在核心部分](../api/core.mdx)），以便每个实例都有自己的状态并且不会干扰以前的默认值 store（无提 provider 模式）。
 
-## SWC plugins
+## SWC 插件
 
-Jotai provides SWC plugins for better DX while developing with Next.js. [Find more info in the SWC section.](../api/swc.mdx)
+Jotai 在使用 Next.js 开发时提供了更好的 DX 的 SWC 插件。 [在 SWC 部分找到更多信息。](../api/swc.mdx)
 
-## Examples
+## 示例
 
 ### Clock
 
@@ -70,4 +73,4 @@ npx create-next-app --example with-jotai with-jotai-app
 yarn create next-app --example with-jotai with-jotai-app
 ```
 
-Here's a [link](https://github.com/vercel/next.js/tree/canary/examples/with-jotai).
+这是一个 [链接](https://github.com/vercel/next.js/tree/canary/examples/with-jotai).

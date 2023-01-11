@@ -4,10 +4,7 @@ description: How to use resettable atoms
 nav: 3.06
 ---
 
-The Jotai core doesn't support resettable atoms.
-But you can create those with helper functions from `jotai/utils`.
-
-## Primitive resettable atom with atomWithReset / useResetAtom
+## 带有 atomWithReset / useResetAtom 的原始可重置原子
 
 ```jsx
 import { useAtom } from 'jotai'
@@ -47,11 +44,11 @@ const TodoList = () => {
 }
 ```
 
-### Examples
+### 示例
 
 <CodeSandbox id="w91cq" />
 
-## Derived atom with RESET symbol
+## 带有 RESET 符号的派生原子
 
 ```jsx
 import { atom, useAtom } from 'jotai'
@@ -80,6 +77,6 @@ const ResetExample = () => {
 }
 ```
 
-### Examples
+### 示例
 
 <CodeSandbox id="41c0s" />

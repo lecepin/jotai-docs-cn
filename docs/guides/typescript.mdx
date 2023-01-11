@@ -4,25 +4,25 @@ description: How to use Jotai with TypeScript
 nav: 3.01
 ---
 
-## Version requirement
+## 版本要求
 
-Jotai uses TypeScript 3.8+ syntax. Upgrade your TypeScript version if you're on 3.7.5 or lower.
+Jotai 使用 TypeScript 3.8+ 语法。 如果您使用的是 3.7.5 或更低版本，请升级您的 TypeScript 版本。
 
-Jotai relies heavily on type inferences and requires `strictNullChecks` to be enabled. Consider adding `"strict": true` in your tsconfig.json.
+Jotai 严重依赖类型推断，需要启用 `strictNullChecks`。 考虑在 tsconfig.json 中添加 `"strict": true`。
 [#550](https://github.com/pmndrs/jotai/issues/550)
 [#802](https://github.com/pmndrs/jotai/issues/802)
 [#838](https://github.com/pmndrs/jotai/issues/838)
 
-## Notes
+## 笔记
 
-### Primitive atoms are basically type inferred
+### 原始原子基本上是类型推断的
 
 ```js
 const numAtom = atom(0) // primitive number atom
 const strAtom = atom('') // primitive string atom
 ```
 
-### Primitive atoms can be explicitly typed
+### 原始原子可以显式键入
 
 ```ts
 const numAtom = atom<number>(0)
@@ -30,7 +30,7 @@ const numAtom = atom<number | null>(0)
 const arrAtom = atom<string[]>([])
 ```
 
-### Derived atoms are also type inferred and explicitly typed
+### 派生原子也是类型推断和显式类型
 
 ```ts
 const asyncStrAtom = atom(async () => 'foo')
@@ -41,7 +41,7 @@ const readWriteAtom = atom<string, number>(
 )
 ```
 
-### useAtom is typed based on atom types
+### useAtom 是基于原子类型的类型
 
 ```js
 const [num, setNum] = useAtom(primitiveNumAtom)
