@@ -1,0 +1,247 @@
+---
+title: Devtools
+description: This doc describes Devtools for Jotai.
+nav: 2.03
+---
+
+## Install
+
+You have to install `jotai-devtools` to use this feature.
+
+```
+npm install jotai-devtools
+# or
+yarn add jotai-devtools
+```
+
+## useAtomsDebugValue
+
+`useAtomsDebugValue` is a React hook that will show all atom values in React Devtools.
+
+```ts
+function useAtomsDebugValue(options?: {
+  scope?: Scope
+  enabled?: boolean
+}): void
+```
+
+Internally, it uses `useDebugValue` which is only effective in DEV mode.
+It will catch all atoms that are accessible from the place the hook is located.
+
+### Example
+
+```jsx
+import { useAtomsDebugValue } from 'jotai-devtools'
+
+const textAtom = atom('hello')
+textAtom.debugLabel = 'textAtom'
+
+const lenAtom = atom((get) => get(textAtom).length)
+lenAtom.debugLabel = 'lenAtom'
+
+const TextBox = () => {
+  const [text, setText] = useAtom(textAtom)
+  const [len] = useAtom(lenAtom)
+  return (
+    <span>
+      <input value={text} onChange={(e) => setText(e.target.value)} />({len})
+    </span>
+  )
+}
+
+const DebugAtoms = () => {
+  useAtomsDebugValue()
+  return null
+}
+
+const App = () => (
+  <Provider>
+    <DebugAtoms />
+    <TextBox />
+  </Provider>
+)
+```
+
+<CodeSandbox id="vvp12f" />
+
+## useAtomDevtools
+
+`useAtomDevtools` is a React hook that manages ReduxDevTools integration for a particular atom.
+
+```ts
+function useAtomDevtools<Value>(
+  anAtom: WritableAtom<Value, Value>,
+  options?: {
+    name?: string
+    scope?: Scope
+    enabled?: boolean
+  }
+): void
+```
+
+The `useAtomDevtools` hook accepts a generic type parameter (mirroring the type stored in the atom). Additionally, the hook accepts two invocation parameters, `anAtom` and `name`.
+`anAtom` is the atom that will be attached to the devtools instance. `name` is an optional parameter that defines the debug label for the devtools instance. If `name` is undefined, `atom.debugLabel` will be used instead.
+
+### Example
+
+```ts
+import { useAtomDevtools } from 'jotai-devtools'
+
+// The interface for the type stored in the atom.
+export interface Task {
+  label: string
+  complete: boolean
+}
+
+// The atom to debug.
+export const tasksAtom = atom<Task[]>([])
+
+// If the useAtomDevtools name parameter is undefined, this value will be used instead.
+tasksAtom.debugLabel = 'Tasks'
+
+export const useTasksDevtools = () => {
+  // The hook can be called simply by passing an atom for debugging.
+  useAtomDevtools(tasksAtom)
+
+  // Specify a custom type parameter
+  useAtomDevtools<Task[]>(tasksAtom)
+
+  // You can attach two devtools instances to the same atom and differentiate them with custom names.
+  useAtomDevtools(tasksAtom, 'Tasks (Instance 1)')
+  useAtomDevtools(tasksAtom, 'Tasks (Instance 2)')
+}
+```
+
+## useAtomsDevtools
+
+⚠️ Note: This hook is experimental (feedbacks are welcome) and only works in a `process.env.NODE_ENV !== 'production'` environment.
+
+`useAtomsDevtools` is a catch-all version of `useAtomDevtools` where it shows all atoms in the store instead of showing a specific one.
+
+```ts
+function useAtomsDevtools(
+  name: string,
+  options?: {
+    scope?: Scope
+    enabled?: boolean
+  }
+): void
+```
+
+It takes a `name` parameter that is needed for naming the Redux devtools instance and a `scope` parameter if the hook is used for a specific scope of atoms.
+
+As a limitation for this API, we need to put `useAtomsDevtools` in a component where the consumed atoms should be in a lower place of the React tree than that component (`AtomsDevtools` in the below example).
+`AtomsDevtools` component can be considered as a best practice for our apps.
+
+### Example
+
+```jsx
+const countAtom = atom(0);
+const doubleCountAtom = atom((get) => get(countAtom) * 2);
+
+function Counter() {
+  const  [count, setCount] =  useAtom(countAtom);
+  const  [doubleCount] =  useAtom(doubleCountAtom);
+
+  ...
+}
+
+const AtomsDevtools = ({ children }) => {
+  useAtomsDevtools('demo')
+  return children
+}
+
+export default function App()  {
+  return (
+    <AtomsDevtools>
+      <Counter />
+    </AtomsDevtools>
+  )
+ }
+```
+
+<CodeSandbox id="3xobn" />
+
+## useAtomsSnapshot
+
+⚠️ Note: This hook only works in a `process.env.NODE_ENV !== 'production'` environment. And it returns a static empty value in production.
+
+`useAtomsSnapshot` takes a snapshot of the currently mounted atoms and their state.
+
+```ts
+function useAtomsSnapshot(scope?: Scope): AtomsSnapshot
+```
+
+It accepts an atom `scope` parameter and will return an `AtomsSnapshot`, which is basically a `Map<AnyAtom, unknown>`. You can use the `Map` API to iterate over atoms and their state.
+This hook is primarily meant for debugging and devtools use cases.
+
+Be careful using this hook because it will cause the component to re-render for all state changes.
+
+### Example
+
+```jsx
+import { Provider } from 'jotai'
+import { useAtomsSnapshot } from 'jotai-devtools'
+
+const RegisteredAtoms = () => {
+  const atoms = useAtomsSnapshot()
+
+  return (
+    <div>
+      <p>Atom count: {atoms.size}</p>
+      <div>
+        {Array.from(atoms).map(([atom, atomValue]) => (
+          <p key={`${atom}`}>{`${atom.debugLabel}: ${atomValue}`}</p>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+const App = () => (
+  <Provider>
+    <RegisteredAtoms />
+  </Provider>
+)
+```
+
+## useGotoAtomsSnapshot
+
+⚠️ Note: This hook only works in a `process.env.NODE_ENV !== 'production'` environment. And it works like an empty function in the production environment.
+
+`useGotoAtomsSnapshot` will update the current Jotai state to match the passed snapshot.
+
+```ts
+function useGotoAtomsSnapshot(
+  scope?: Scope
+): (values: Iterable<readonly [AnyAtom, unknown]>) => void
+```
+
+This hook returns a callback, which takes a `snapshot` from the `useAtomsSnapshot` hook and will update the Jotai state. It accepts an atom `scope` parameter and will error if the atoms have mixed scopes.
+This hook is primarily meant for debugging and devtools use cases.
+
+### Example
+
+```jsx
+import { Provider } from 'jotai'
+import { useAtomsSnapshot, useGotoAtomsSnapshot } from 'jotai-devtools'
+
+const petAtom = atom('cat')
+const colorAtom = atom('blue')
+
+const UpdateSnapshot = () => {
+  const snapshot = useAtomsSnapshot()
+  const goToSnapshot = useGotoAtomsSnapshot()
+  return (
+    <button
+      onClick={() => {
+        const newSnapshot = new Map(snapshot)
+        newSnapshot.set(petAtom, 'dog')
+        newSnapshot.set(colorAtom, 'green')
+        goToSnapshot(newSnapshot)
+      }}>
+      Go to snapshot
+    </button>
+  )
+}
+```

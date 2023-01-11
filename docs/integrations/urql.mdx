@@ -1,0 +1,133 @@
+---
+title: URQL
+description: This doc describes URQL integration.
+nav: 4.08
+---
+
+## Install
+
+You have to install `jotai-urql`, `@urql/core` and `wonka` to use the integration.
+
+```
+yarn add jotai-urql @urql/core wonka
+```
+
+## Exported functions
+
+- `atomsWithQuery` for [client.query](https://formidable.com/open-source/urql/docs/api/core/#clientquery)
+- `atomsWithMutation` for [client.mutation](https://formidable.com/open-source/urql/docs/api/core/#clientmutation)
+- `atomsWithSubscription` for [client.subscription](https://formidable.com/open-source/urql/docs/api/core/#clientsubscription)
+
+All three functions follow the same signature.
+
+```ts
+const [dataAtom, statusAtom] = atomsWithSomething(
+  query,
+  getVariables,
+  getContext,
+  getClient
+)
+```
+
+The first three parameters will be arguments to those functions (For mutation, it's empty).
+The last optional `getClient` parameter is a function that returns [Client](https://formidable.com/open-source/urql/docs/api/core/#client).
+
+The return values have two atoms.
+The first one is called `dataAtom` and it's an atom for the data from the observer. `dataAtom` requires Suspense.
+The second one is called `statusAtom` and it's an atom for the full result from the observer. `statusAtom` doesn't require Suspnse.
+The data from the observer is also included in `statusAtom`,
+so if you don't use Suspense, you don't need to use `dataAtom`.
+
+## atomsWithQuery
+
+`atomsWithQuery` creates new atoms with a query. It internally uses [client.query](https://formidable.com/open-source/urql/docs/api/core/#clientquery).
+
+```jsx
+import { useAtom } from 'jotai'
+import { createClient } from '@urql/core'
+import { atomsWithQuery } from 'jotai-urql'
+
+const client = createClient({ url: '...' })
+
+const idAtom = atom(1)
+const [userAtom] = atomsWithQuery(
+  '{ user { first_name last_name } }', // query
+  (get) => ({ id: get(idAtom) }), // variables
+  undefined, // context
+  () => client
+)
+
+const UserData = () => {
+  const [{ data }] = useAtom(userAtom)
+  return <div>{JSON.stringify(data)}</div>
+}
+```
+
+### Examples
+
+#### Basic demo
+
+FIXME: Update demo
+
+<CodeSandbox id="zujf6" />
+
+## atomsWithMutation
+
+`atomsWithMutation` creates new atoms with a mutation. It internally uses [client.mutation](https://formidable.com/open-source/urql/docs/api/core/#clientmutation).
+
+```jsx
+import { useAtom } from 'jotai'
+import { createClient } from '@urql/core'
+import { atomsWithMutation } from 'jotai-urql'
+
+const client = createClient({ url: '...' })
+
+const [fooAtom] = atomsWithMutation(() => client)
+
+const FooData = () => {
+  const [{ data }, mutate] = useAtom(fooAtom)
+  return (
+    <div>
+      {JSON.stringify(data)}{' '}
+      <button
+        onClick={() =>
+          mutate({ query: 'mutation Foo { text }', variables: {} })
+        }>
+        Click me
+      </button>
+    </div>
+  )
+}
+```
+
+### Examples
+
+TODO: create example
+
+## atomsWithSubscription
+
+`atomsWithSubscription` creates new atoms with a subscription. It internally uses [client.subscription](https://formidable.com/open-source/urql/docs/api/core/#clientsubscription).
+
+```jsx
+import { useAtom } from 'jotai'
+import { createClient } from '@urql/core'
+import { atomsWithSubscription } from 'jotai-urql'
+
+const client = createClient({ url: '...' })
+
+const [fooAtom] = atomsWithSubscription(
+  'subscription Foo { text }', // query
+  () => ({}), // variables
+  undefined, // context
+  () => client
+)
+
+const FooData = () => {
+  const [{ data }] = useAtom(fooAtom)
+  return <div>{JSON.stringify(data)}</div>
+}
+```
+
+### Examples
+
+TODO: create example
