@@ -12,11 +12,11 @@ export const Sidebar = ({ showDocs = false }) => {
         <div className="mt-8 flex flex-col space-y-4">
           {/* <SearchButton /> */}
           {showDocs ? (
-            <Button to="/jotai-docs-cn/" icon="home">
+            <Button to="/" icon="home">
               主页
             </Button>
           ) : (
-            <Button to="/jotai-docs-cn/docs/introduction" icon="book">
+            <Button to="/docs/introduction" icon="book">
               文档
             </Button>
           )}
