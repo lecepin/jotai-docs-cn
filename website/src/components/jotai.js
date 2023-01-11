@@ -32,7 +32,7 @@ export const Jotai = ({ isDocsPage = false, small = false, ...rest }) => {
         <div
           className={cx(!small ? 'text-sm leading-snug 2xl:text-base' : 'text-xs leading-tight')}
         >
-          Primitive and flexible state management for React
+          原始和灵活的 React 状态管理
         </div>
       </div>
     </div>

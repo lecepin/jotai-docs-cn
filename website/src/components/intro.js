@@ -13,12 +13,10 @@ export const Intro = () => {
         />
         <div className="speech-bubble relative w-2/3 space-y-4 rounded-xl bg-gray-100 p-4 text-sm leading-snug text-gray-700 dark:bg-gray-900 dark:text-gray-300 sm:text-base md:text-lg lg:w-3/4 lg:p-8 lg:leading-normal">
           <div>
-            No extra re-renders, state resides within React, and you get the full benefits from
-            suspense and concurrent features.
+            没有额外的重新渲染，状态驻留在 React 中，您可以从 Suspense 和并发功能中获得全部好处。
           </div>
           <div>
-            It’s scalable from a simple React.useState replacement to a large-scale application with
-            complex requirements.
+            它可以从简单的 React.useState 替代品扩展到具有复杂需求的大型应用程序。
           </div>
         </div>
       </div>

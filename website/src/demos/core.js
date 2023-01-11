@@ -23,13 +23,13 @@ export const CoreDemo = () => {
 
   const code = `import { atom, useAtom } from 'jotai'
 
-// Create your atoms and derivatives
+// 创建你的原子和衍生物
 const textAtom = atom('hello')
 const uppercaseAtom = atom(
   (get) => get(textAtom).toUpperCase()
 )
 
-// Use them anywhere in your app
+// 在您的应用程序中的任何位置使用它们
 const Input = () => {
   const [text, setText] = useAtom(textAtom)
   const handleChange = (e) => setText(e.target.value)
@@ -45,7 +45,7 @@ const Uppercase = () => {
   )
 }
 
-// Now you have the components
+// 现在你有了组件
 const App = () => {
   return (
     <>

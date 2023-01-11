@@ -10,7 +10,7 @@ export const IntegrationsDemo = () => {
   const code = `import { useAtom } from 'jotai'
 import { atomWithImmer } from 'jotai/immer'
 
-// Create a new atom with an immer-based write function
+// 使用基于 immer 的写入函数创建一个新原子
 const countAtom = atomWithImmer(0)
 
 const Counter = () => {

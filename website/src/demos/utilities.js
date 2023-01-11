@@ -9,11 +9,11 @@ export const UtilitiesDemo = () => {
   const code = `import { useAtom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 
-// Set the string key and the initial value
+// 设置字符串键和初始值
 const darkModeAtom = atomWithStorage('darkMode', false)
 
 const Page = () => {
-  // Consume persisted state like any other atom
+  // 像任何其他原子一样使用持久化状态
   const [darkMode, setDarkMode] = useAtom(darkModeAtom)
   const toggleDarkMode = () => setDarkMode(!darkMode)
   return (
@@ -52,7 +52,7 @@ const Page = () => {
               </button>
             </div>
             <div className="text-sm leading-relaxed lg:text-lg">
-              This toggle will be persisted between user sessions via localStorage.
+              此切换将通过 localStorage 在用户会话之间保留。
             </div>
           </div>
         </ClientOnly>
