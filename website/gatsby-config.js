@@ -46,6 +46,7 @@ const queries = [
 ];
 
 module.exports = {
+  pathPrefix: `/jotai-docs-cn`,
   siteMetadata: {
     title: `Jotai, primitive and flexible state management for React`,
     description: `Jotai takes a bottom-up approach to React state management with an atomic model inspired by Recoil. One can build state by combining atoms and renders are optimized based on atom dependency. This solves the extra re-render issue of React context and avoids requiring the memoization technique.`,
