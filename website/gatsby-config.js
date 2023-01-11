@@ -46,6 +46,7 @@ const queries = [
 ];
 
 module.exports = {
+  pathPrefix: `/jotai-docs-cn`,
   assetPrefix: `/jotai-docs-cn`,
   siteMetadata: {
     title: `Jotai, primitive and flexible state management for React`,
