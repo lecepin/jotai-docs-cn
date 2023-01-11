@@ -16,7 +16,7 @@ export const Sidebar = ({ showDocs = false }) => {
               主页
             </Button>
           ) : (
-            <Button to="/jotai-docs-cn/introduction" icon="book">
+            <Button to="/jotai-docs-cn/docs/introduction" icon="book">
               文档
             </Button>
           )}
