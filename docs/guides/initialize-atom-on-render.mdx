@@ -1,74 +1,75 @@
 ---
-title:  在 Render 中初始化 Atom State
+title: 在 Render 中初始化 Atom State
 description: How to initialize atom state on initial render
 nav: 3.12
 ---
 
-There are times when you need to create an reusable component which uses atoms.
+有时您需要创建一个使用原子的可重用组件。
 
-These atoms' initial state are determined by the props passed to the component.
+这些原子的初始状态由传递给组件的 props 决定。
 
-Below is a basic example of illustrating how you can use `Provider` and its prop, `initialValues`, to initialize state.
+下面是一个基本示例，说明如何使用 `Provider` 及其属性 `initialValues` 来初始化状态。
 
-### Basic Example
+### 基本示例
 
-> CodeSandbox link: [codesandbox](https://codesandbox.io/s/strange-tdd-gb1eo0?file=/src/App.js).
+> CodeSandbox 链接：[codesandbox](https://codesandbox.io/s/strange-tdd-gb1eo0?file=/src/App.js)。
 
-Consider a basic example where you have a reusable `TextDisplay` component that allows you to display and update plain text.
+考虑一个基本示例，其中您有一个可重用的 `TextDisplay` 组件，允许您显示和更新纯文本。
 
-This component has two child components, `PrettyText` and `UpdateTextInput`.
+该组件有两个子组件，`PrettyText` 和 `UpdateTextInput`。
 
-- `PrettyText` displays the text in blue.
-- `UpdateTextInput` is an input field which updates the text value.
+- `PrettyText` 以蓝色显示文本。
+- `UpdateTextInput` 是一个更新文本值的输入字段。
 
-As opposed to passing `text` as a prop in the two child components, you decided that the `text` state should be shared between components as an atom.
+与在两个子组件中将 `text` 作为 prop 传递相反，您决定 `text` 状态应该作为一个原子在组件之间共享。
 
-To make `TextDisplay` component reusable, we take in a prop `initialTextValue`, which determines the initial state of the `text` atom.
+为了使 `TextDisplay` 组件可重用，我们采用了一个属性 `initialTextValue` ，它确定了 `text` 原子的初始状态。
 
-To tie `initialTextValue` to `textAtom`, we wrap the child components in a `Provider`. Then, we populate the `initialValues` array of atom tuples with the initial values.
+为了将 `initialTextValue` 绑定到 `textAtom`，我们将子组件包装在 `Provider` 中。 然后，我们用初始值填充原子元组的 `initialValues` 数组。
 
 ```jsx
-const textAtom = atom('')
+const textAtom = atom("");
 
 const PrettyText = () => {
-  const [text] = useAtom(textAtom)
+  const [text] = useAtom(textAtom);
   return (
     <>
       <text
         style={{
-          color: 'blue',
-        }}>
+          color: "blue",
+        }}
+      >
         {text}
       </text>
     </>
-  )
-}
+  );
+};
 
 const UpdateTextInput = () => {
-  const [text, setText] = useAtom(textAtom)
+  const [text, setText] = useAtom(textAtom);
   const handleInputChange = (e) => {
-    setText(e.target.value)
-  }
+    setText(e.target.value);
+  };
   return (
     <>
       <input onChange={handleInputChange} value={text} />
     </>
-  )
-}
+  );
+};
 
 export const TextDisplay = ({ initialTextValue }) => {
   return (
-    // initialising on state with prop on render here
+    // 在此处使用渲染 prop 初始化状态
     <Provider initialValues={[[textAtom, initialTextValue]]}>
       <PrettyText />
       <br />
       <UpdateTextInput />
     </Provider>
-  )
-}
+  );
+};
 ```
 
-Now, we can easily resue `TextDisplay` component with different initial text values despite them referencing the "same" atom.
+现在，我们可以轻松地使用不同的初始文本值重新生成 `TextDisplay` 组件，尽管它们引用了“相同”的原子。
 
 ```jsx
 export default function App() {
@@ -78,12 +79,12 @@ export default function App() {
 
       <TextDisplay initialTextValue="initial text value 2" />
     </div>
-  )
+  );
 }
 ```
 
-This behavior is due to our child components looking for the lowest commmon `Provider` ancestor to derive its value.
+此行为是由于我们的子组件寻找最低的公共 `Provider` 祖先来派生其值。
 
-For more information on `Provider` behavior, please read the docs [here](https://jotai.org/docs/api/core#provider).
+有关 `Provider` 行为的更多信息，请阅读文档 [此处](https://jotai.org/docs/api/core#provider)。
 
-For more complex use cases, check out [Molecules integration](../integrations/molecules.mdx).
+对于更复杂的用例，请查看 [Molecules 集成](../integrations/molecules.mdx)。
