@@ -46,48 +46,48 @@ nav: 2.02
 
 10. [atomWithDefault](../utils/atom-with-default.mdx)
 
-    This is a function to create an overwritable primitive atom. Its default value can be specified with a read function instead of a static initial value.
+    这是一个创建可重写原始原子的函数。 它的默认值可以用读取函数而不是静态初始值来指定。
 
 11. [atomWithHash](../utils/atom-with-hash.mdx)
 
-    This creates a new atom that is connected with URL hash.
+    这将创建一个与 URL 哈希连接的新原子。
 
 12. [atomFamily](../utils/atom-family.mdx)
 
-    This will create a function that takes param and returns an atom.
+    这将创建一个接受参数并返回原子的函数。
 
 13. [selectAtom](../utils/select-atom.mdx)
 
-    This function creates a derived atom whose value is a function of the original atom's value, determined by `selector`.
+    此函数创建一个派生原子，其值是原始原子值的函数，由 `selector` 确定。
 
 14. [useAtomCallback](../utils/use-atom-callback.mdx)
 
-    This hook allows one to interact with atoms imperatively.
+    这个 hook 允许命令式地与原子交互。
 
 15. [freezeAtom](../utils/freeze-atom.mdx)
 
-    The `freezeAtom` takes an existing atom and returns a new derived atom. The value with the new derived atom will be frozen (i.e. not mutable).
+    `freezeAtom` 接受一个现有的原子并返回一个新的派生原子。 新派生原子的值将被冻结（即不可变）。
 
 16. [freezeAtomCreator](../utils/freeze-atom-creator.mdx)
 
-    Instead of creating a frozen atom from an existing atom, `freezeAtomCreator` takes an atom creator function and returns a new function.
+    `freezeAtomCreator` 不是从现有原子创建冻结原子，而是采用原子创建函数并返回一个新函数。
 
 17. [splitAtom](../utils/split-atom.mdx)
 
-    The `splitAtom` utility is useful for when you want to get an atom for each element in a list.
+    当您想要为列表中的每个元素获取一个原子时，`splitAtom` 很有用。
 
 18. [waitForAll](../utils/wait-for-all.mdx)
 
-    The `waitForAll` utility is a concurrency helper, which allows us to evaluate multiple async atoms.
+    `waitForAll` 是一个并发 helper，它允许我们等待多个异步原子。
 
 19. [useHydrateAtoms](../utils/use-hydrate-atoms.mdx)
 
-    The primary use case for `useHydrateAtoms` are SSR apps like Next.js, where an initial value is e.g. fetched on the server, which can be passed to a component by props.
+    `useHydrateAtoms` 的主要用例是像 Next.js 这样的 SSR 应用程序，其中初始值是例如 在服务器上获取，可以通过 props 传递给组件。
 
 20. [loadable](../utils/loadable.mdx)
 
-    The `loadable` API will allow you to bypass the inherent suspending happening at the core of asynchronous flows in Jotai. Wrap your atoms with `loadable` and you directly get the results of your async atoms as an object with a state to tell you if the Promise has resolved or even failed.
+    `loadable` API 将允许您绕过 Jotai 中异步流核心发生的固有 suspense。 用 `loadable` 包裹你的原子，你可以直接得到你的异步原子的结果作为一个对象，它有一个状态来告诉你 Promise 是否已经解决甚至失败。
 
 21. [abortableAtom](../utils/abortable-atom.mdx)
 
-    The `abortableAtom` utility is to define a derived atom with abortability.
+    `abortableAtom` 用于定义具有中止性的派生原子。
