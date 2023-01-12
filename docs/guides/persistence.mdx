@@ -4,110 +4,110 @@ description: How to persist atoms
 nav: 3.03
 ---
 
-Jotai has an [atomWithStorage function in the utils bundle](../api/utils.mdx#atom-with-storage) for persistence that supports persisting state in `sessionStorage`, `localStorage`, `AsyncStorage`, or the URL hash.
+Jotai 在 utils bundle 中有一个 [atomWithStorage 函数](../api/utils.mdx#atom-with-storage) 用于持久化，支持在 `sessionStorage`、`localStorage`、`AsyncStorage` 或 URL 哈希中持久化状态 .
 
-There are also several alternate implementations here:
+这里还有几个替代实现：
 
-## A simple pattern with localStorage
+## localStorage 的简单模式
 
 ```js
-const strAtom = atom(localStorage.getItem('myKey') ?? 'foo')
+const strAtom = atom(localStorage.getItem("myKey") ?? "foo");
 
 const strAtomWithPersistence = atom(
   (get) => get(strAtom),
   (get, set, newStr) => {
-    set(strAtom, newStr)
-    localStorage.setItem('myKey', newStr)
+    set(strAtom, newStr);
+    localStorage.setItem("myKey", newStr);
   }
-)
+);
 ```
 
-## A helper function with localStorage and JSON parse
+## 具有 localStorage 和 JSON 解析的辅助函数
 
 ```js
 const atomWithLocalStorage = (key, initialValue) => {
   const getInitialValue = () => {
-    const item = localStorage.getItem(key)
+    const item = localStorage.getItem(key);
     if (item !== null) {
-      return JSON.parse(item)
+      return JSON.parse(item);
     }
-    return initialValue
-  }
-  const baseAtom = atom(getInitialValue())
+    return initialValue;
+  };
+  const baseAtom = atom(getInitialValue());
   const derivedAtom = atom(
     (get) => get(baseAtom),
     (get, set, update) => {
       const nextValue =
-        typeof update === 'function' ? update(get(baseAtom)) : update
-      set(baseAtom, nextValue)
-      localStorage.setItem(key, JSON.stringify(nextValue))
+        typeof update === "function" ? update(get(baseAtom)) : update;
+      set(baseAtom, nextValue);
+      localStorage.setItem(key, JSON.stringify(nextValue));
     }
-  )
-  return derivedAtom
-}
+  );
+  return derivedAtom;
+};
 ```
 
-(Error handling should be added.)
+（应添加错误处理。）
 
-## A helper function with AsyncStorage and JSON parse
+## 带有 AsyncStorage 和 JSON 解析的辅助函数
 
-This requires [onMount](../api/core.mdx#on-mount).
+这需要 [onMount](../api/core.mdx#on-mount)。
 
 ```js
 const atomWithAsyncStorage = (key, initialValue) => {
-  const baseAtom = atom(initialValue)
+  const baseAtom = atom(initialValue);
   baseAtom.onMount = (setValue) => {
-    ;(async () => {
-      const item = await AsyncStorage.getItem(key)
-      setValue(JSON.parse(item))
-    })()
-  }
+    (async () => {
+      const item = await AsyncStorage.getItem(key);
+      setValue(JSON.parse(item));
+    })();
+  };
   const derivedAtom = atom(
     (get) => get(baseAtom),
     (get, set, update) => {
       const nextValue =
-        typeof update === 'function' ? update(get(baseAtom)) : update
-      set(baseAtom, nextValue)
-      AsyncStorage.setItem(key, JSON.stringify(nextValue))
+        typeof update === "function" ? update(get(baseAtom)) : update;
+      set(baseAtom, nextValue);
+      AsyncStorage.setItem(key, JSON.stringify(nextValue));
     }
-  )
-  return derivedAtom
-}
+  );
+  return derivedAtom;
+};
 ```
 
-Don't forget to check out the [Async documentation](./async) for more details on how to use async atoms.
+不要忘记查看 [异步文档](./async) 以获取有关如何使用异步原子的更多详细信息。
 
-### Usage in Async actions
+### 在异步操作中的用法
 
-When using an asynchronous storage, the reading of the created atoms are asynchronous too. That comes with some limitations. Before `useAtom` has been called at least once, the value is not set.
-This can cause an issue, for example, if you want to retrieve the value of your stored atom in an async action (write-only atom).
+使用异步存储时，创建的原子的读取也是异步的。 这有一些限制。 在至少调用一次 `useAtom` 之前，未设置该值。
+这可能会导致问题，例如，如果您想在异步操作（只写原子）中检索存储的原子的值。
 
-Let's use the [atomWithStorage function in the utils bundle](../api/utils.mdx#atom-with-storage) for the examples, so that we have more options available.
+让我们使用 [utils 包中的 atomWithStorage 函数](../api/utils.mdx#atom-with-storage) 作为示例，以便我们有更多可用选项。
 
 ```js
-import { atomWithStorage, createJSONStorage } from 'jotai/utils'
+import { atomWithStorage, createJSONStorage } from "jotai/utils";
 
-const storage = createJSONStorage(() => AsyncStorage)
-const userId = atomWithStorage('user-id-key', null, storage)
-const userInfo = atom({})
+const storage = createJSONStorage(() => AsyncStorage);
+const userId = atomWithStorage("user-id-key", null, storage);
+const userInfo = atom({});
 const fetchUserInfo = atom(null, async (get, set, payload: any) => {
-  const id = get(userId) // This throws an error if "userId" is not loaded yet
-  const info = await fetch('https://jotai.org/users/' + id)
-  set(userInfo, info)
-})
+  const id = get(userId); // This throws an error if "userId" is not loaded yet
+  const info = await fetch("https://jotai.org/users/" + id);
+  set(userInfo, info);
+});
 ```
 
-We want to make sure the action will never fail. As always with asynchronous flow in Jotai, we have 2 options: with or without **Suspense**.
+我们要确保行动永远不会失败。 与 Jotai 中的异步流程一样，我们有 2 个选择：有或没有 **Suspense**。
 
-#### With Suspense
+#### Suspense
 
-You may want to preload atoms at root level of your app directly:
+您可能希望直接在应用程序的根级别预加载原子：
 
 ```js
 const Preloader = () => {
-  useAtomValue(userId) // Trigger the "onMount" function that will load the data from the store
-  return null
-}
+  useAtomValue(userId); // 触发将从 store 加载数据的“onMount”函数
+  return null;
+};
 ```
 
 ```jsx
@@ -121,148 +121,148 @@ const Root = () => {
 }
 ```
 
-#### Without Suspense
+#### 没有 Suspense
 
 ```js
-// We add the "delayInit: true" option to tell jotai not to use Suspense
-const storage = { ...createJSONStorage(() => AsyncStorage), delayInit: true }
-const userId = atomWithStorage('user-id-key', null, storage)
-const userInfo = atom({})
+// 我们添加了“delayInit: true”选项来告诉 jotai 不要使用 Suspense
+const storage = { ...createJSONStorage(() => AsyncStorage), delayInit: true };
+const userId = atomWithStorage("user-id-key", null, storage);
+const userInfo = atom({});
 const fetchUserInfo = atom(null, async (get, set, payload) => {
-  let id = get(userId)
+  let id = get(userId);
   if (id === null) {
-    // We make sure to preload if no value has yet been loaded
-    id = await AsyncStorage.getItem('user-id-key')
+    // 如果尚未加载任何值，我们确保预加载
+    id = await AsyncStorage.getItem("user-id-key");
   }
-  const info = await fetch('https://jotai.org/users/' + id)
-  set(userInfo, info)
-})
+  const info = await fetch("https://jotai.org/users/" + id);
+  set(userInfo, info);
+});
 ```
 
-But always remember jotai is un-opinionated and your workflow may not need preloading at all.
+但永远记住 jotai 是不拘一格的，你的工作流程可能根本不需要预加载。
 
 ---
 
-## Example with sessionStorage
+## sessionStorage 示例
 
-Same as AsyncStorage, just use `atomWithStorage` util and override the default storage with the `sessionStorage`
+与 AsyncStorage 相同，只需使用 `atomWithStorage` util 并使用 `sessionStorage` 覆盖默认存储
 
 ```js
-import { atomWithStorage, createJSONStorage } from 'jotai/utils'
+import { atomWithStorage, createJSONStorage } from "jotai/utils";
 
-const storage = createJSONStorage(() => sessionStorage)
-const someAtom = atomWithStorage('some-key', someInitialValue, storage)
+const storage = createJSONStorage(() => sessionStorage);
+const someAtom = atomWithStorage("some-key", someInitialValue, storage);
 ```
 
-## A serialize atom pattern
+## 序列化原子模式
 
 ```tsx
 const serializeAtom = atom<
   null,
-  | { type: 'serialize'; callback: (value: string) => void }
-  | { type: 'deserialize'; value: string }
+  | { type: "serialize"; callback: (value: string) => void }
+  | { type: "deserialize"; value: string }
 >(null, (get, set, action) => {
-  if (action.type === 'serialize') {
+  if (action.type === "serialize") {
     const obj = {
       todos: get(todosAtom).map(get),
-    }
-    action.callback(JSON.stringify(obj))
-  } else if (action.type === 'deserialize') {
-    const obj = JSON.parse(action.value)
-    // needs error handling and type checking
+    };
+    action.callback(JSON.stringify(obj));
+  } else if (action.type === "deserialize") {
+    const obj = JSON.parse(action.value);
+    // 需要错误处理和类型检查
     set(
       todosAtom,
       obj.todos.map((todo: Todo) => atom(todo))
-    )
+    );
   }
-})
+});
 
 const Persist = () => {
-  const [, dispatch] = useAtom(serializeAtom)
+  const [, dispatch] = useAtom(serializeAtom);
   const save = () => {
     dispatch({
-      type: 'serialize',
+      type: "serialize",
       callback: (value) => {
-        localStorage.setItem('serializedTodos', value)
+        localStorage.setItem("serializedTodos", value);
       },
-    })
-  }
+    });
+  };
   const load = () => {
-    const value = localStorage.getItem('serializedTodos')
+    const value = localStorage.getItem("serializedTodos");
     if (value) {
-      dispatch({ type: 'deserialize', value })
+      dispatch({ type: "deserialize", value });
     }
-  }
+  };
   return (
     <div>
       <button onClick={save}>Save to localStorage</button>
       <button onClick={load}>Load from localStorage</button>
     </div>
-  )
-}
+  );
+};
 ```
 
-### Examples
+### 示例
 
 <CodeSandbox id="ijyxm" />
 
-## A pattern with atomFamily
+## 带有 atomFamily 的模式
 
 ```tsx
 const serializeAtom = atom<
   null,
-  | { type: 'serialize'; callback: (value: string) => void }
-  | { type: 'deserialize'; value: string }
+  | { type: "serialize"; callback: (value: string) => void }
+  | { type: "deserialize"; value: string }
 >(null, (get, set, action) => {
-  if (action.type === 'serialize') {
-    const todos = get(todosAtom)
-    const todoMap: Record<string, { title: string; completed: boolean }> = {}
+  if (action.type === "serialize") {
+    const todos = get(todosAtom);
+    const todoMap: Record<string, { title: string; completed: boolean }> = {};
     todos.forEach((id) => {
-      todoMap[id] = get(todoAtomFamily({ id }))
-    })
+      todoMap[id] = get(todoAtomFamily({ id }));
+    });
     const obj = {
       todos,
       todoMap,
       filter: get(filterAtom),
-    }
-    action.callback(JSON.stringify(obj))
-  } else if (action.type === 'deserialize') {
-    const obj = JSON.parse(action.value)
-    // needs error handling and type checking
-    set(filterAtom, obj.filter)
+    };
+    action.callback(JSON.stringify(obj));
+  } else if (action.type === "deserialize") {
+    const obj = JSON.parse(action.value);
+    // 需要错误处理和类型检查
+    set(filterAtom, obj.filter);
     obj.todos.forEach((id: string) => {
-      const todo = obj.todoMap[id]
-      set(todoAtomFamily({ id, ...todo }), todo)
-    })
-    set(todosAtom, obj.todos)
+      const todo = obj.todoMap[id];
+      set(todoAtomFamily({ id, ...todo }), todo);
+    });
+    set(todosAtom, obj.todos);
   }
-})
+});
 
 const Persist = () => {
-  const [, dispatch] = useAtom(serializeAtom)
+  const [, dispatch] = useAtom(serializeAtom);
   const save = () => {
     dispatch({
-      type: 'serialize',
+      type: "serialize",
       callback: (value) => {
-        localStorage.setItem('serializedTodos', value)
+        localStorage.setItem("serializedTodos", value);
       },
-    })
-  }
+    });
+  };
   const load = () => {
-    const value = localStorage.getItem('serializedTodos')
+    const value = localStorage.getItem("serializedTodos");
     if (value) {
-      dispatch({ type: 'deserialize', value })
+      dispatch({ type: "deserialize", value });
     }
-  }
+  };
   return (
     <div>
       <button onClick={save}>Save to localStorage</button>
       <button onClick={load}>Load from localStorage</button>
     </div>
-  )
-}
+  );
+};
 ```
 
-### Examples
+### 示例
 
 <CodeSandbox id="eilkg" />

@@ -13,38 +13,35 @@ Jotai 使用 `useHydrateAtoms` 支持原子 Hydration。 hook 的文档可以在
 可以将 Jotai 与路由同步。 您可以使用 `atomWithHash` 实现这一点：
 
 ```js
-const pageAtom = atomWithHash('page', 1, {
+const pageAtom = atomWithHash("page", 1, {
   replaceState: true,
   subscribe: (callback) => {
-    Router.events.on('routeChangeComplete', callback)
-    window.addEventListener('hashchange', callback)
+    Router.events.on("routeChangeComplete", callback);
+    window.addEventListener("hashchange", callback);
     return () => {
-      Router.events.off('routeChangeComplete', callback)
-      window.removeEventListener('hashchange', callback)
-    }
+      Router.events.off("routeChangeComplete", callback);
+      window.removeEventListener("hashchange", callback);
+    };
   },
-})
+});
 ```
 
 通过这种方式，您可以完全控制要订阅的[路由事件](https://nextjs.org/docs/api-reference/next/router#routerevents)。
 
 ## 您不能在服务器端渲染中返回 promises
 
-It's important to note that you can't return promises with SSR - However, it's possible to guard against it inside the atom definition.
-
-If possible use `useHydrateAtoms` to hydrate values from the server.
 重要的是要注意，您不能使用 SSR 返回 Promise，但是，可以在原子定义中防止它。
 
 如果可能，使用 `useHydrateAtoms` 来混合来自服务器的值。
 
 ```js
 const postData = atom((get) => {
-  const id = get(postId)
+  const id = get(postId);
   if (isSSR || prefetchedPostData[id]) {
-    return prefetchedPostData[id] || EMPTY_POST_DATA
+    return prefetchedPostData[id] || EMPTY_POST_DATA;
   }
-  return fetchData(id) // returns a promise
-})
+  return fetchData(id); // returns a promise
+});
 ```
 
 ## Provider
