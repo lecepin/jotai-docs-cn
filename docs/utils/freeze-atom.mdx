@@ -2,29 +2,28 @@
 title: freezeAtom
 ---
 
-## Usage
+## 使用
 
 ```ts
 freezeAtom(anAtom): AtomType
 ```
 
-`freezeAtom` takes an existing atom and returns a new derived "frozen" atom.
-The atom will be deeply frozen by `Object.freeze`.
-It is useful to find bugs where you unintentionally tried
-to change objects (states) which can lead to unexpected behavior.
-You may use `freezeAtom` with all atoms to prevent this situation.
+`freezeAtom` 采用现有原子并返回一个新派生的“冻结”原子。
+原子将被 `Object.freeze` 深度冻结。
+查找您无意中尝试更改可能导致意外行为的对象（状态）的错误很有用。
+您可以对所有原子使用 `freezeAtom` 来防止这种情况。
 
-## Parameters
+## 参数
 
-**anAtom** (required): An atom you wish to freeze.
+**anAtom** (required): 你想冻结的原子。
 
-## Examples
+## 示例
 
 ```js
-import { atom } from 'jotai'
-import { freezeAtom } from 'jotai/utils'
+import { atom } from "jotai";
+import { freezeAtom } from "jotai/utils";
 
-const objAtom = freezeAtom(atom({ count: 0 }))
+const objAtom = freezeAtom(atom({ count: 0 }));
 ```
 
 ## CodeSandbox

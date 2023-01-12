@@ -2,85 +2,80 @@
 title: selectAtom
 ---
 
-Ref: https://github.com/pmndrs/jotai/issues/36
+引用: https://github.com/pmndrs/jotai/issues/36
 
 ```ts
 function selectAtom<Value, Slice>(
   anAtom: Atom<Value>,
   selector: (v: Value) => Slice,
   equalityFn: (a: Slice, b: Slice) => boolean = Object.is
-): Atom<Slice>
+): Atom<Slice>;
 ```
 
-This function creates a derived atom whose value is a function of the original atom's value,
-determined by `selector.`
-The selector function runs whenever the original atom changes; it updates the derived atom
-only if `equalityFn` reports that the derived value has changed.
-By default, `equalityFn` is reference equality, but you can supply your favorite deep-equals
-function to stabilize the derived value where necessary.
+此函数创建一个派生原子，其值是原始原子值的函数，由 `selector` 确定。
+只要原始原子发生变化，选择器函数就会运行； 仅当 `equalityFn` 通知派生值已更改时，它才会更新派生原子。
+默认情况下，`equalityFn` 是引用相等性，但您可以提供您最喜欢的 deep-equals 函数以在必要时稳定派生值。
 
-## Examples
+## 示例
 
 ```js
 const defaultPerson = {
   name: {
-    first: 'Jane',
-    last: 'Doe',
+    first: "Jane",
+    last: "Doe",
   },
   birth: {
     year: 2000,
-    month: 'Jan',
+    month: "Jan",
     day: 1,
     time: {
       hour: 1,
       minute: 1,
     },
   },
-}
+};
 
-// Original atom.
-const personAtom = atom(defaultPerson)
+// 原始原子。
+const personAtom = atom(defaultPerson);
 
-// Tracks person.name. Updated when person.name object changes, even
-// if neither name.first nor name.last actually change.
-const nameAtom = selectAtom(personAtom, (person) => person.name)
+// 跟踪 person.name。 当 person.name 对象更改时更新
+// 即使 name.first 和 name.last 都没有实际更改。
+const nameAtom = selectAtom(personAtom, (person) => person.name);
 
-// Tracks person.birth. Updated when year, month, day, hour, or minute changes.
-// Use of deepEquals means that this atom doesn't update if birth field is
-// replaced with a new object containing the same data. E.g., if person is re-read
-// from a database.
-const birthAtom = selectAtom(personAtom, (person) => person.birth, deepEquals)
+// 跟踪 person.birth。 在年、月、日、小时或分钟更改时更新。
+// 使用 deepEquals 意味着如果 birth 字段被替换为包含相同数据的新对象，则此原子不会更新。 例如，如果从数据库中重新读取人。
+const birthAtom = selectAtom(personAtom, (person) => person.birth, deepEquals);
 ```
 
-## Hold stable references
+## 保持稳定的引用
 
-As always, to prevent an infinite loop when using `useAtom` in render cycle, you must provide `useAtom` a stable reference of your atoms.
-For `selectAtom`, we need **both** the base atom and the selector to be stable.
+与往常一样，为了防止在渲染周期中使用 useAtom 时出现无限循环，您必须为 useAtom 提供原子的稳定引用。
+对于 `selectAtom`，我们需要 **基础原子和选择器都** 稳定。
 
 ```js
-const [value] = useAtom(selectAtom(atom(0), (val) => val)) // So this will cause an infinite loop
+const [value] = useAtom(selectAtom(atom(0), (val) => val)); // 所以这会导致无限循环
 ```
 
-You have multiple options in order to satisfy these constraints:
+为了满足这些约束，您有多种选择：
 
 ```js
-const baseAtom = atom(0) // Stable
-const baseSelector = (v) => v // Stable
+const baseAtom = atom(0); // Stable
+const baseSelector = (v) => v; // Stable
 const Component = () => {
-  // Solution 1: Memoize the whole resulting atom with "useMemo"
-  const [value] = useAtom(useMemo(() => selectAtom(baseAtom, (v) => v), []))
+  // 解决方案 1：使用“useMemo”记忆整个结果原子
+  const [value] = useAtom(useMemo(() => selectAtom(baseAtom, (v) => v), []));
 
-  // Solution 2: Memoize the inline callback with "useCallback"
+  // 解决方案 2：使用“useCallback”记忆内联回调
   const [value] = useAtom(
     selectAtom(
       baseAtom,
       useCallback((v) => v, [])
     )
-  )
+  );
 
-  // Solution 3: All constraints are already satisfied
-  const [value] = useAtom(selectAtom(baseAtom, baseSelector))
-}
+  // 解决方案 3：所有约束都已满足
+  const [value] = useAtom(selectAtom(baseAtom, baseSelector));
+};
 ```
 
 ## CodeSandbox

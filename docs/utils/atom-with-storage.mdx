@@ -2,82 +2,82 @@
 title: atomWithStorage
 ---
 
-Ref: https://github.com/pmndrs/jotai/pull/394
+引用: https://github.com/pmndrs/jotai/pull/394
 
 ```jsx
-import { useAtom } from 'jotai'
-import { atomWithStorage } from 'jotai/utils'
+import { useAtom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 
-const darkModeAtom = atomWithStorage('darkMode', false)
+const darkModeAtom = atomWithStorage("darkMode", false);
 
 const Page = () => {
-  const [darkMode, setDarkMode] = useAtom(darkModeAtom)
+  const [darkMode, setDarkMode] = useAtom(darkModeAtom);
 
   return (
     <>
-      <h1>Welcome to {darkMode ? 'dark' : 'light'} mode!</h1>
+      <h1>Welcome to {darkMode ? "dark" : "light"} mode!</h1>
       <button onClick={() => setDarkMode(!darkMode)}>toggle theme</button>
     </>
-  )
-}
+  );
+};
 ```
 
-The `atomWithStorage` function creates an atom with a value persisted in `localStorage` or `sessionStorage` for React or `AsyncStorage` for React Native.
+`atomWithStorage` 函数创建一个原子，其值保存在用于 React 的 `localStorage` 或 `sessionStorage` 或用于 React Native 的 `AsyncStorage` 中。
 
-## Parameters
+## 参数
 
-**key** (required): a unique string used as the key when syncing state with localStorage, sessionStorage, or AsyncStorage
+**key** (required): 与 localStorage、sessionStorage 或 AsyncStorage 同步状态时用作 key 的唯一字符串
 
-**initialValue** (required): the initial value of the atom
+**initialValue** (required): 原子初始值
 
-**storage** (optional): an object with:
+**storage** (optional): 一个对象:
 
-- `getItem` and `setItem` methods for storing/retrieving persisted state; defaults to using `localStorage` for storage/retrieval and `JSON.stringify()`/`JSON.parse()` for serialization/deserialization.
-- Optionally, the storage has a `subscribe` property, which can be used to synchronize storage. The default `localStorage` handles `storage` events for cross-tab synchronization.
-- Optionally, the storage has a `delayInit` (`boolean`) property, which can be used to tell jotai whether to use Suspense
-  - `delayInit: true` will not suspend when first reading the value of your atom
-  - `delayInit: false` (default) will suspend when first reading the value of your atom
+- 用于存储/检索持久状态的 `getItem` 和 `setItem` 方法； 默认使用 `localStorage` 进行存储/检索，使用 `JSON.stringify()`/`JSON.parse()` 进行序列化/反序列化。
+- 可选地，存储有一个 `subscribe` 属性，可用于同步存储。 默认的 `localStorage` 处理跨表同步的 `storage` 事件。
+- 可选地，存储有一个 `delayInit` (`boolean`) 属性，可以用来告诉 jotai 是否使用 Suspense
+  - `delayInit: true` 不会在第一次读取原子值时暂停
+  - `delayInit: false`（默认）将在第一次读取原子值时暂停
 
 <CodeSandbox id="vuwi7" />
 
-## Server-side rendering
+## 服务器端渲染
 
-Any JSX markup that depends on the value of a stored atom (e.g., a `className` or `style` prop) will use the `initialValue` when rendered on the server (since `localStorage` and `sessionStorage` are not available on the server).
+任何依赖于存储原子值的 JSX 标记（例如，`className` 或 `style` 属性）在服务器上呈现时将使用 `initialValue`（因为 `localStorage` 和 `sessionStorage` 在服务器上不可用）。
 
-This means that there will be a mismatch between what is originally served to the user's browser as HTML and what is expected by React during the rehydration process if the user has a `storedValue` that differs from the `initialValue`.
+这意味着如果用户的 `storedValue` 与 `initialValue` 不同，那么最初作为 HTML 提供给用户浏览器的内容与 React 在 rehydration 过程中所期望的内容之间将存在不匹配。
 
-The suggested workaround for this issue is to only render the content dependent on the `storedValue` client-side by wrapping it in a [custom `<ClientOnly>` wrapper](https://www.joshwcomeau.com/react/the-perils-of-rehydration/#abstractions), which only renders after rehydration. Alternative solutions are technically possible, but would require a brief "flicker" as the `initialValue` is swapped to the `storedValue`, which can result in an unpleasant user experience, so this solution is advised.
+针对此问题的建议解决方法是通过将内容包装在[自定义 `<ClientOnly>` 包装器](https://www.joshwcomeau.com/react/the-perils-of-rehydration/#abstractions），仅在 rehydration 后呈现。 替代解决方案在技术上是可行的，但在将 `initialValue` 交换为 `storedValue` 时需要短暂的“闪烁”，这可能会导致不愉快的用户体验，因此建议采用此解决方案。
 
-## Deleting an item from storage
+## 从存储中删除项目
 
-For the case you want to delete an item from storage,
-the atom created with `atomWithStorage` accepts the `RESET` symbol on write.
+对于要从存储中删除项目的情况，
+使用 `atomWithStorage` 创建的原子在写入时接受 `RESET` 符号。
 
-See the following example for the usage:
+有关用法，请参见以下示例：
 
 ```jsx
-import { useAtom } from 'jotai'
-import { atomWithStorage, RESET } from 'jotai/utils'
+import { useAtom } from "jotai";
+import { atomWithStorage, RESET } from "jotai/utils";
 
-const textAtom = atomWithStorage('text', 'hello')
+const textAtom = atomWithStorage("text", "hello");
 
 const TextBox = () => {
-  const [text, setText] = useAtom(textAtom)
+  const [text, setText] = useAtom(textAtom);
 
   return (
     <>
       <input value={text} onChange={(e) => setText(e.target.value)} />
       <button onClick={() => setText(RESET)}>Reset (to 'hello')</button>
     </>
-  )
-}
+  );
+};
 ```
 
-If needed, you can also do conditional resets based on previous value.
+如果需要，您还可以根据先前的值进行条件重置。
 
-This can be particularly useful if you wish to clear keys in localStorage if previous values meet a condition.
+如果您希望在先前的值满足条件的情况下清除 localStorage 中的键，这将特别有用。
 
-Below exemplifies this usage that clears the `visible` key whenever the previous value is `true`.
+下面举例说明了这种用法，只要前一个值为 `true`，就会清除 `visible` 键。
 
 ```jsx
 import { useAtom } from 'jotai'
@@ -97,16 +97,16 @@ const TextBox = () => {
 }
 ```
 
-## React-Native implementation
+## React-Native 实现
 
-You can use any library that implements `getItem`, `setItem` & `removeItem`.
-Let's say you would use the standard AsyncStorage provided by the community.
+您可以使用任何实现 `getItem`、`setItem` 和 `removeItem` 的库。
+假设您将使用社区提供的标准 AsyncStorage。
 
 ```js
-import { atomWithStorage, createJSONStorage } from 'jotai/utils'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { atomWithStorage, createJSONStorage } from "jotai/utils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const storage = createJSONStorage(() => AsyncStorage)
-const content = {} // anything JSON serializable
-const storedAtom = atomWithStorage('stored-key', content, storage)
+const storage = createJSONStorage(() => AsyncStorage);
+const content = {}; // 任何可序列化的 JSON
+const storedAtom = atomWithStorage("stored-key", content, storage);
 ```

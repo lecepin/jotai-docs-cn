@@ -2,39 +2,39 @@
 title: atomWithDefault
 ---
 
-Ref: https://github.com/pmndrs/jotai/issues/352
+引用: https://github.com/pmndrs/jotai/issues/352
 
-## Usage
+## 使用
 
-This is a function to create a resettable primitive atom.
-Its default value can be specified with a read function instead of a static initial value.
+这是一个创建可重置原始原子的函数。
+它的默认值可以用读取函数而不是静态初始值来指定。
 
 ```js
-import { atomWithDefault } from 'jotai/utils'
+import { atomWithDefault } from "jotai/utils";
 
-const count1Atom = atom(1)
-const count2Atom = atomWithDefault((get) => get(count1Atom) * 2)
+const count1Atom = atom(1);
+const count2Atom = atomWithDefault((get) => get(count1Atom) * 2);
 ```
 
 ## Codesandbox
 
 <CodeSandbox id="unfro" />
 
-## Resetting default values
+## 重置默认值
 
-You can reset the value of an `atomWithDefault` atom to its original default value.
+您可以将 `atomWithDefault` 原子的值重置为其原始默认值。
 
 ```jsx
-import { useAtom } from 'jotai'
-import { atomWithDefault, useResetAtom, RESET } from 'jotai/utils'
+import { useAtom } from "jotai";
+import { atomWithDefault, useResetAtom, RESET } from "jotai/utils";
 
-const count1Atom = atom(1)
-const count2Atom = atomWithDefault((get) => get(count1Atom) * 2)
+const count1Atom = atom(1);
+const count2Atom = atomWithDefault((get) => get(count1Atom) * 2);
 
 const Counter = () => {
-  const [count1, setCount1] = useAtom(count1Atom)
-  const [count2, setCount2] = useAtom(count2Atom)
-  const resetCount2 = useResetAtom(count2Atom)
+  const [count1, setCount1] = useAtom(count1Atom);
+  const [count2, setCount2] = useAtom(count2Atom);
+  const resetCount2 = useResetAtom(count2Atom);
 
   return (
     <>
@@ -46,13 +46,10 @@ const Counter = () => {
       <button onClick={() => resetCount2()}>Reset with useResetAtom</button>
       <button onClick={() => setCount2(RESET)}>Reset with RESET const</button>
     </>
-  )
-}
+  );
+};
 ```
 
-This can be useful when an `atomWithDefault` atom value is overwritten
-using the `set` function, in which case the provided `getter` function
-is no longer used and any change in dependencies atoms will not trigger an update.
+当使用 `set` 函数覆盖 `atomWithDefault` 原子值时，这可能很有用，在这种情况下，不再使用提供的 `getter` 函数，并且依赖原子中的任何更改都不会触发更新。
 
-Resetting the value allows us to restore its original default value,
-discarding changes made previously via the `set` function.
+重置值允许我们恢复其原始默认值，丢弃之前通过 `set` 函数所做的更改。
