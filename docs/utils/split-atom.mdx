@@ -2,93 +2,93 @@
 title: splitAtom
 ---
 
-The `splitAtom` utility is useful for when you want to get an atom for each element in a list.
-It works for read/write atoms that contain a list. When used on such an atom, it returns an atom
-which itself contains a list of atoms, each corresponding to the respective item in the original list.
+当您想要为列表中的每个元素获取一个原子时，`splitAtom` utils 很有用。
+它适用于包含列表的 读/写 原子。 当用在这样的原子上时，它返回一个原子
+它本身包含一个原子列表，每个原子对应于原始列表中的相应项目。
 
-A simplified type signature would be:
+简化的类型签名是：
 
 ```ts
 type SplitAtom = <Item>(arrayAtom: PrimitiveAtom<Array<Item>>): Atom<Array<PrimitiveAtom<Item>>>
 ```
 
-Additionally, the atom returned by `splitAtom` contains a dispatch function in the `write` direction (since v1.6.4),
-this is useful for when you want a simple way to modify the original atom with actions such as `remove`, `insert`, and `move`.
+此外，`splitAtom` 返回的原子在`write` 方向包含一个调度函数（自 v1.6.4 起），
+当您想要一种简单的方法来使用 `remove`、insert`和`move` 等操作修改原始原子时，这很有用。
 
-See the below example for usage.
+有关用法，请参见下面的示例。
 
 ## codesandbox
 
 <CodeSandbox id="s4hvgo" />
 
 ```tsx
-import { Provider, atom, useAtom, PrimitiveAtom } from 'jotai'
-import { splitAtom } from 'jotai/utils'
-import './styles.css'
+import { Provider, atom, useAtom, PrimitiveAtom } from "jotai";
+import { splitAtom } from "jotai/utils";
+import "./styles.css";
 
 const initialState = [
   {
-    task: 'help the town',
+    task: "help the town",
     done: false,
   },
   {
-    task: 'feed the dragon',
+    task: "feed the dragon",
     done: false,
   },
-]
+];
 
-const todosAtom = atom(initialState)
-const todoAtomsAtom = splitAtom(todosAtom)
+const todosAtom = atom(initialState);
+const todoAtomsAtom = splitAtom(todosAtom);
 
-type TodoType = (typeof initialState)[number]
+type TodoType = typeof initialState[number];
 
 const TodoItem = ({
   todoAtom,
   remove,
 }: {
-  todoAtom: PrimitiveAtom<TodoType>
-  remove: () => void
+  todoAtom: PrimitiveAtom<TodoType>;
+  remove: () => void;
 }) => {
-  const [todo, setTodo] = useAtom(todoAtom)
+  const [todo, setTodo] = useAtom(todoAtom);
   return (
     <div>
       <input
         value={todo.task}
         onChange={(e) => {
-          setTodo((oldValue) => ({ ...oldValue, task: e.target.value }))
+          setTodo((oldValue) => ({ ...oldValue, task: e.target.value }));
         }}
       />
       <input
         type="checkbox"
         checked={todo.done}
         onChange={() => {
-          setTodo((oldValue) => ({ ...oldValue, done: !oldValue.done }))
+          setTodo((oldValue) => ({ ...oldValue, done: !oldValue.done }));
         }}
       />
       <button onClick={remove}>remove</button>
     </div>
-  )
-}
+  );
+};
 
 const TodoList = () => {
-  const [todoAtoms, dispatch] = useAtom(todoAtomsAtom)
+  const [todoAtoms, dispatch] = useAtom(todoAtomsAtom);
   return (
     <ul>
       {todoAtoms.map((todoAtom) => (
         <TodoItem
           todoAtom={todoAtom}
-          remove={() => dispatch({ type: 'remove', atom: todoAtom })}
+          remove={() => dispatch({ type: "remove", atom: todoAtom })}
         />
       ))}
     </ul>
-  )
-}
+  );
+};
 
 const App = () => (
   <Provider>
     <TodoList />
   </Provider>
-)
+);
 
-export default App
+export default App;
 ```

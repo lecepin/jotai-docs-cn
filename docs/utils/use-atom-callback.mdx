@@ -2,9 +2,9 @@
 title: useAtomCallback
 ---
 
-Ref: https://github.com/pmndrs/jotai/issues/60
+引用: https://github.com/pmndrs/jotai/issues/60
 
-## Usage
+## 使用
 
 ```ts
 useAtomCallback(
@@ -12,49 +12,49 @@ useAtomCallback(
 ): (arg: Arg) => Promise<Result>
 ```
 
-This hook allows to interact with atoms imperatively.
-It takes a callback function that works like atom write function,
-and returns a function that returns a promise.
+这个 hook 允许与原子进行命令式交互。
+它需要一个像原子写函数一样工作的回调函数，
+并返回一个返回承诺的函数。
 
-The callback to pass in the hook must be stable (should be wrapped with useCallback).
+传递给钩子的回调必须是稳定的（应该用 useCallback 包装）。
 
-## Examples
+## 示例
 
 ```jsx
-import { useEffect, useState, useCallback } from 'react'
-import { Provider, atom, useAtom } from 'jotai'
-import { useAtomCallback } from 'jotai/utils'
+import { useEffect, useState, useCallback } from "react";
+import { Provider, atom, useAtom } from "jotai";
+import { useAtomCallback } from "jotai/utils";
 
-const countAtom = atom(0)
+const countAtom = atom(0);
 
 const Counter = () => {
-  const [count, setCount] = useAtom(countAtom)
+  const [count, setCount] = useAtom(countAtom);
   return (
     <>
       {count} <button onClick={() => setCount((c) => c + 1)}>+1</button>
     </>
-  )
-}
+  );
+};
 
 const Monitor = () => {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
   const readCount = useAtomCallback(
     useCallback((get) => {
-      const currCount = get(countAtom)
-      setCount(currCount)
-      return currCount
+      const currCount = get(countAtom);
+      setCount(currCount);
+      return currCount;
     }, [])
-  )
+  );
   useEffect(() => {
     const timer = setInterval(async () => {
-      console.log(await readCount())
-    }, 1000)
+      console.log(await readCount());
+    }, 1000);
     return () => {
-      clearInterval(timer)
-    }
-  }, [readCount])
-  return <div>current count: {count}</div>
-}
+      clearInterval(timer);
+    };
+  }, [readCount]);
+  return <div>current count: {count}</div>;
+};
 ```
 
 ## Codesandbox

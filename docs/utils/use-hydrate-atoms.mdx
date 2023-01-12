@@ -2,68 +2,68 @@
 title: useHydrateAtoms
 ---
 
-Ref: https://github.com/pmndrs/jotai/issues/340
+引用: https://github.com/pmndrs/jotai/issues/340
 
-## Usage
+## 使用
 
 ```js
-import { atom, useAtom } from 'jotai'
-import { useHydrateAtoms } from 'jotai/utils'
+import { atom, useAtom } from "jotai";
+import { useHydrateAtoms } from "jotai/utils";
 
-const countAtom = atom(0)
+const countAtom = atom(0);
 const CounterPage = ({ countFromServer }) => {
-  useHydrateAtoms([[countAtom, countFromServer]])
-  const [count] = useAtom(countAtom)
-  // count would be the value of `countFromServer`, not 0.
-}
+  useHydrateAtoms([[countAtom, countFromServer]]);
+  const [count] = useAtom(countAtom);
+  // count 将是 countFromServer 的值，而不是 0。
+};
 ```
 
-The primary use case for `useHydrateAtoms` are SSR apps like Next.js, where an initial value is e.g. fetched on the server, which can be passed to a component by props.
+`useHydrateAtoms` 的主要用例是像 Next.js 这样的 SSR 应用程序，其中初始值是例如 在服务器上获取，可以通过 props 传递给组件。
 
 ```ts
-// Definition
+// 定义
 function useHydrateAtoms(
   values: Iterable<readonly [Atom<unknown>, unknown]>,
   scope?: Scope
-): void
+): void;
 ```
 
-The hook takes an iterable of tuples containing `[atom, value]` as an argument and optionally scope.
+该 hook 采用包含 `[atom, value]` 的可迭代元组作为参数和可选范围。
 
 ```js
-// Usage with an array, specifying a scope
+// 与数组一起使用，指定范围
 useHydrateAtoms(
   [
     [countAtom, 42],
-    [frameworkAtom, 'Next.js'],
+    [frameworkAtom, "Next.js"],
   ],
   myScope
-)
-// Or with a map
-const [initialValues] = useState(() => new Map([[count, 42]]))
-useHydrateAtoms(initialValues)
+);
+// 或者用 map
+const [initialValues] = useState(() => new Map([[count, 42]]));
+useHydrateAtoms(initialValues);
 ```
 
-Atoms can only be hydrated once per scope. Therefore, if the initial value used is changed during rerenders, it won't update the atom value.
+每个作用域中的原子只能 hydrated 一次。 因此，如果在重新渲染期间更改了使用的初始值，则不会更新原子值。
 
-If there's a need to hydrate in multiple scopes, use multiple `useHydrateAtoms` hooks to achieve that.
+如果需要在多个范围内进行 hydrated，请使用多个 `useHydrateAtoms` 挂钩来实现。
 
 ```js
 useHydrateAtoms([
   [countAtom, 42],
-  [frameworkAtom, 'Next.js'],
-])
+  [frameworkAtom, "Next.js"],
+]);
 useHydrateAtoms(
   [
     [countAtom, 17],
-    [frameworkAtom, 'Gatsby'],
+    [frameworkAtom, "Gatsby"],
   ],
   myScope
-)
+);
 ```
 
 ## Codesandbox
 
 <CodeSandbox id="snu7n" />
 
-There's more examples in the [Next.js section](../guides/nextjs.mdx).
+[Next.js 部分](../guides/nextjs.mdx) 中有更多示例。

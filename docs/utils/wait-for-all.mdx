@@ -2,73 +2,73 @@
 title: waitForAll
 ---
 
-Sometimes you have multiple async atoms in your components:
+有时你的组件中有多个异步原子：
 
 ```js
 const dogsAtom = atom(async (get) => {
-  const response = await fetch('/dogs')
-  return await response.json()
-})
+  const response = await fetch("/dogs");
+  return await response.json();
+});
 const catsAtom = atom(async (get) => {
-  const response = await fetch('/cats')
-  return await response.json()
-})
+  const response = await fetch("/cats");
+  return await response.json();
+});
 
 const App = () => {
-  const [dogs] = useAtom(dogsAtom)
-  const [cats] = useAtom(catsAtom)
+  const [dogs] = useAtom(dogsAtom);
+  const [cats] = useAtom(catsAtom);
   // ...
-}
+};
 ```
 
-However, this will start fetching one at the time, which is not optimal - It would be better if we can start fetching both as soon as possible.
+然而，这将同时开始获取一个，这不是最优的——如果我们能尽快开始获取两个会更好。
 
-The `waitForAll` utility is a concurrency helper, which allows us to evaluate multiple async atoms:
+`waitForAll` 实用程序是一个并发 helper，它允许我们评估多个异步原子：
 
 ```js
 const dogsAtom = atom(async (get) => {
-  const response = await fetch('/dogs')
-  return await response.json()
-})
+  const response = await fetch("/dogs");
+  return await response.json();
+});
 const catsAtom = atom(async (get) => {
-  const response = await fetch('/cats')
-  return await response.json()
-})
+  const response = await fetch("/cats");
+  return await response.json();
+});
 
 const App = () => {
-  const [[dogs, cats]] = useAtom(waitForAll([dogsAtom, catsAtom]))
+  const [[dogs, cats]] = useAtom(waitForAll([dogsAtom, catsAtom]));
   // or ...
-  const [dogs, cats] = useAtomValue(waitForAll([dogsAtom, catsAtom]))
+  const [dogs, cats] = useAtomValue(waitForAll([dogsAtom, catsAtom]));
   // ...
-}
+};
 ```
 
-You can also use `waitForAll` inside an atom - It's also possible to name them for readability:
+您还可以在原子内使用 `waitForAll` - 也可以为它们命名以提高可读性：
 
 ```js
 const dogsAtom = atom(async (get) => {
-  const response = await fetch('/dogs')
-  return await response.json()
-})
+  const response = await fetch("/dogs");
+  return await response.json();
+});
 const catsAtom = atom(async (get) => {
-  const response = await fetch('/cats')
-  return await response.json()
-})
+  const response = await fetch("/cats");
+  return await response.json();
+});
 
 const animalsAtom = waitForAll({
   dogs: dogsAtom,
   cats: catsAtom,
-})
+});
 
 const App = () => {
-  const [{ dogs, cats }] = useAtom(animalsAtom)
+  const [{ dogs, cats }] = useAtom(animalsAtom);
   // or ...
-  const { dogs, cats } = useAtomValue(animalsAtom)
+  const { dogs, cats } = useAtomValue(animalsAtom);
   // ...
-}
+};
 ```
 
-Note: If you use an object in `waitForAll` **and** `waitForAll` is inside render function, you need to wrap it with `useMemo` to avoid infinite loop.
+注意：如果你在 `waitForAll` 中使用了一个对象 **并且** `waitForAll` 在渲染函数中，你需要用 `useMemo` 包裹它以避免死循环。
 
 ## Codesandbox
 

@@ -5,19 +5,19 @@ title: useResetAtom
 ```ts
 function useResetAtom<Value>(
   anAtom: WritableAtom<Value, typeof RESET>
-): () => void | Promise<void>
+): () => void | Promise<void>;
 ```
 
-Resets a [Resettable atom](../guides/resettable.mdx) to its initial value.
+将 [Resettable atom](../guides/resettable.mdx) 重置为其初始值。
 
-## Example
+## 示例
 
 ```jsx
-import { useResetAtom } from 'jotai/utils'
-import { todoListAtom } from './store'
+import { useResetAtom } from "jotai/utils";
+import { todoListAtom } from "./store";
 
 const TodoResetButton = () => {
-  const resetTodoList = useResetAtom(todoListAtom)
-  return <button onClick={resetTodoList}>Reset</button>
-}
+  const resetTodoList = useResetAtom(todoListAtom);
+  return <button onClick={resetTodoList}>Reset</button>;
+};
 ```
