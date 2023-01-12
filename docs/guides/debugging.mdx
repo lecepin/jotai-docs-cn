@@ -3,107 +3,107 @@ title: 调试
 nav: 3.02
 ---
 
-In basic apps, `console.log` can be our best friend for debugging atoms, but when applications get bigger and we have more atoms to use, logging would not be a good way of debugging atoms.
-Jotai provides two ways of debugging atoms, **React Dev Tools** and **Redux Dev tools**. For reading values and simple debugging, React Dev Tools might suit you, but for more complicated tasks like Time-travelling and setting values, Redux Dev Tools would be a better option.
+在基本的应用程序中，`console.log` 可能是我们调试原子的最好朋友，但是当应用程序变得更大并且我们有更多的原子要使用时，日志记录就不是调试原子的好方法了。
+Jotai 提供了两种调试原子的方式，**React Dev Tools** 和 **Redux Dev tools**。 对于读取值和简单的调试，React Dev Tools 可能适合您，但对于时间旅行和设置值等更复杂的任务，Redux Dev Tools 将是更好的选择。
 
-## Debug labels
+## 调试标签
 
-It is worth mentioning that we have a concept called **Debug labels** in Jotai which may help us with debugging.
-By default each Jotai state has the label like `1:<no debugLabel>` with number being internal `key` assigned to each atom automatically. But you can add labels to atoms to help you distinguish them more easily with `debugLabel`.
+值得一提的是，我们在 Jotai 中有一个叫做 **Debug labels** 的概念，可以帮助我们进行调试。
+默认情况下，每个 Jotai 状态都有像 `1:<no debugLabel>` 这样的标签，数字是自动分配给每个原子的内部 `key`。 但是您可以为原子添加标签，以帮助您使用 `debugLabel` 更轻松地区分它们。
 
 ```js
-const countAtom = atom(0)
-// countAtom's debugLabel by default is 'atom1'
-if (process.env.NODE_ENV !== 'production') {
-  countAtom.debugLabel = 'count'
-  // debugLabel is 'count' now
+const countAtom = atom(0);
+// countAtom 的 debugLabel 默认是 'atom1'
+if (process.env.NODE_ENV !== "production") {
+  countAtom.debugLabel = "count";
+  // debugLabel 现在是 'count'
 }
 ```
 
-Jotai provides both a Babel and a SWC plugin, that adds a debugLabel automatically to every atom, which makes things easier for us. For more info, check out [jotai/babel](https://github.com/pmndrs/jotai/blob/main/docs/api/babel.mdx#plugin-debug-label) and [@swc-jotai/debug-label](https://github.com/pmndrs/jotai/blob/main/docs/api/swc.mdx)
+Jotai 提供了一个 Babel 和一个 SWC 插件，它会自动为每个原子添加一个 debugLabel，这使我们的事情变得更容易。 有关详细信息，请查看 [jotai/babel](https://github.com/pmndrs/jotai/blob/main/docs/api/babel.mdx#plugin-debug-label) 和 [@swc-jotai/debug -label](https://github.com/pmndrs/jotai/blob/main/docs/api/swc.mdx)
 
-## Using React Dev Tools
+## 使用 React 开发工具
 
-You can use [React Dev Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi)
-to inspect Jotai state. To achieve that [useDebugValue](https://reactjs.org/docs/hooks-reference.html#usedebugvalue)
-is used inside custom hooks. Keep in mind that it only works in dev mode
-(such as `NODE_ENV === 'development'`).
+您可以使用 [React 开发工具](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi)
+检查 Jotai 状态。 实现 [useDebugValue](https://reactjs.org/docs/hooks-reference.html#usedebugvalue)
+在自定义挂钩中使用。 请记住，它仅适用于开发模式
+（例如 `NODE_ENV === 'development'`）。
 
-### useAtom
+### 使用原子
 
-`useAtom` calls `useDebugValue` for atom values, so if you select the component that consumes Jotai atoms in React Dev Tools, you would see "Atom" hooks for each atom that is used in the component along with the value it has right now.
+`useAtom` 为原子值调用 `useDebugValue`，所以如果您在 React Dev Tools 中选择消耗 Jotai 原子的组件，您会看到组件中使用的每个原子的“Atom”挂钩以及它现在具有的值 .
 
-### useAtomsDebugValue
+### 使用 AtomsDebugValue
 
-`useAtomsDebugValue` catches all atoms in a component tree under Provider (or an entire tree for Provider-less mode), and `useDebugValue` for all atoms values.
-If you navigate to the component that has `useAtomsDebugValue` in the React Dev Tools, we can see a custom hook "AtomsDebugValue" which allows you to see all atom values and their dependents.
+`useAtomsDebugValue` 捕获 Provider 下的组件树中的所有原子（或无提供者模式下的整个树），并且 `useDebugValue` 用于所有原子值。
+如果您在 React Dev Tools 中导航到具有 useAtomsDebugValue 的组件，我们可以看到一个自定义挂钩 `AtomsDebugValue`，它允许您查看所有原子值及其依赖项。
 
-One use case is to put the hook just under the `Provider` component:
+一个用例是将 hook 放在 `Provider` 组件下面：
 
 ```jsx
 const DebugAtoms = () => {
-  useAtomsDebugValue()
-  return null
-}
+  useAtomsDebugValue();
+  return null;
+};
 
 const Root = () => (
   <Provider>
     <DebugAtoms />
     <App />
   </Provider>
-)
+);
 ```
 
-## Using Redux DevTools
+## 使用 Redux 开发者工具
 
-You can also use [Redux DevTools](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd)
-to inspect atoms, with many features like Time-travelling and value dispatching.
+您还可以使用 [Redux DevTools](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd)
+检查原子，具有时间旅行和值分配等许多功能。
 
 ### [useAtomDevtools](https://jotai.org/docs/api/devtools#use-atom-devtools)
 
-> `useAtomDevtools` is a React hook that manages ReduxDevTools integration for a particular atom.
+> `useAtomDevtools` 是一个 React hook，用于管理特定原子的 ReduxDevTools 集成。
 
-If you have a specific atom in mind that you may want to debug, `useAtomDevtools` can be a good option.
+如果您有一个特定的原子需要调试，`useAtomDevtools` 可能是一个不错的选择。
 
 ```js
 const countAtom = atom(0)
-// setting countAtom.debugLabel is recommended if we have more atoms
+// 如果我们有更多原子，建议设置 countAtom.debugLabel
 
 function Counter() {
   const [count, setCount] = useAtom(countAtom)
   useAtomDevtools(countAtom)
 ```
 
-Now if we try `setCount`, we can see that the Redux Dev Tools logs those changes immediately.
+现在，如果我们尝试 setCount，我们可以看到 Redux 开发工具会立即记录这些更改。
 
 ![](https://cdn.discordapp.com/attachments/688751221464367186/930857764719329290/unknown.png)
 
-#### Time travel
+#### 时间旅行
 
-Sometimes we need to switch to a specific value of our atoms' state, with Time travelling this is possible.
-You can hover on each action you see in the devtools and see the **Jump** option there, with clicking it you'd be able to switch to that specific value.
+有时我们需要切换到原子状态的特定值，通过时间旅行这是可能的。
+您可以将鼠标悬停在您在开发工具中看到的每个操作，并在那里看到 **Jump** 选项，单击它您就可以切换到该特定值。
 
-#### Pause
+#### 暂停
 
-If we don't record changes on atoms, we can stop watching those using the **Pausing** feature.
+如果我们不记录原子的变化，我们可以使用 **Pausing** 功能观察那些。
 
 ![](https://cdn.discordapp.com/attachments/688751221464367186/930893033925378118/unknown.png)
 
 #### Dispatch
 
-It's possible to set values on atoms with the **Dispatch** feature. You can do that by clicking on the **Show Dispatcher** button.
+可以使用 **Dispatch** 功能在原子上设置值。 您可以通过单击 **Show Dispatcher** 按钮来执行此操作。
 ![](https://cdn.discordapp.com/attachments/688751221464367186/930895694846361680/unknown.png)
-This would set the `countAtoms`'s value to `5`.
+这会将 `countAtoms` 的值设置为 5。
 
-> We should note that the value will be parsed by JSON.parse, so pass supported values.
+> 我们应该注意，该值将由 JSON.parse 解析，因此请传递支持的值。
 
 ### [useAtomsDevtools](https://jotai.org/docs/api/devtools#use-atoms-devtools)
 
-> `useAtomsDevtools` is a catch-all version of `useAtomDevtools` where it shows all atoms in the store instead of showing a specific one.
+> `useAtomsDevtools` 是 `useAtomDevtools` 的包罗万象的版本，它显示 store 中的所有原子，而不是显示特定的原子。
 
-We'd recommend this hook if you want to keep track of all of your atoms in one place. It means every action on every atom that is placed in the bottom of this hook (in the React tree) will be catched by the Redux Dev Tools.
+如果您想在一个地方跟踪所有原子，我们建议您使用这个 hook。 这意味着放置在这个 hook 底部（在 React 树中）的每个原子上的每个动作都将被 Redux 开发工具捕获。
 
-Every feature of `useAtomDevtools` is supported in this hook, but there's an extra feature, which includes giving more information about atoms dependents like:
+此 hook 支持 `useAtomDevtools` 的每个功能，但还有一个额外的功能，其中包括提供有关原子依赖项的更多信息，例如：
 
 ```json
 {
@@ -122,9 +122,9 @@ Every feature of `useAtomDevtools` is supported in this hook, but there's an ext
 }
 ```
 
-## Frozen Atoms
+## 冻结原子
 
-To find bugs where you accidentally tried to mutate objects stored in atoms you
-could use [`freezeAtom`](../utils/freeze-atom.mdx) or
-[`freezeAtomCreator`](../utils/freeze-atom-creator.mdx#) from `jotai/utils` bundle.
-Which returns atoms value that is deeply freezed with `Object.freeze`.
+为了找到你不小心试图改变存储在原子中的对象的错误，你
+可以使用 [`freezeAtom`](../utils/freeze-atom.mdx) 或者
+[`freezeAtomCreator`](../utils/freeze-atom-creator.mdx#) 来自 `jotai/utils` 包。
+它返回用 `Object.freeze` 深度冻结的原子值。
