@@ -4,144 +4,144 @@ description: How to test your code using Jotai
 nav: 3.08
 ---
 
-We echo the [guiding principles of Testing library](https://testing-library.com/docs/guiding-principles/):
+我们呼应 [测试库的指导原则](https://testing-library.com/docs/guiding-principles/)：
 
-- "The more your tests resemble the way your software is used, the more confidence they can give you."
+- “你的测试越像你的软件的使用方式，他们就越能给你信心。”
 
-We encourage you to write tests, like the user would interact with your atoms and components,
-therefore treating Jotai as an implementation detail.
+我们鼓励您编写测试，就像用户会与您的原子和组件交互一样，
+因此将 Jotai 视为实现细节。
 
-Here's an example using [React testing library](https://github.com/testing-library/react-testing-library):
+下面是一个使用 [React 测试库](https://github.com/testing-library/react-testing-library) 的示例：
 
 `Counter.tsx`:
 
 ```jsx
-import { atom, useAtom } from 'jotai'
+import { atom, useAtom } from "jotai";
 
-const countAtom = atom(0)
+const countAtom = atom(0);
 
 export function Counter() {
-  const [count, setCount] = useAtom(countAtom)
+  const [count, setCount] = useAtom(countAtom);
   return (
     <h1>
       <p>{count}</p>
       <button onClick={() => setCount((c) => c + 1)}>one up</button>
     </h1>
-  )
+  );
 }
 ```
 
 `Counter.test.ts`:
 
 ```jsx
-import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
-import { Counter } from './Counter'
+import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { Counter } from "./Counter";
 
-test('should increment counter', () => {
+test("should increment counter", () => {
   // Arrange
-  render(<Counter />)
+  render(<Counter />);
 
-  const counter = screen.getByText('0')
-  const incrementButton = screen.getByText('one up')
+  const counter = screen.getByText("0");
+  const incrementButton = screen.getByText("one up");
   // Act
-  fireEvent.click(incrementButton)
+  fireEvent.click(incrementButton);
   // Assert
-  expect(counter.textContent).toEqual('1')
-})
+  expect(counter.textContent).toEqual("1");
+});
 ```
 
-## Injected Values
+## 注入值
 
-You may want to inject arbitrary values to your atom before starting some tests.
-Maybe the counter should be limited to 100. Let's see how to test that it doesn't increase after reaching 100.
-In order to do that, simply use a [Provider](..api/core#provider), and export your atom to be filled-in.
+在开始某些测试之前，您可能希望向您的原子注入任意值。
+也许计数器应该限制在 100。我们来看看如何测试它达到 100 后不增加。
+为此，只需使用 [Provider](..api/core#provider)，然后导出要填充的原子。
 
 ```tsx
-import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
-import { countAtom, Counter } from './Counter'
-import { Provider } from 'jotai'
+import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { countAtom, Counter } from "./Counter";
+import { Provider } from "jotai";
 
 const CounterProvider = () => {
   return (
     <Provider initialValues={[[countAtom, 100]]}>
       <Counter />
     </Provider>
-  )
-}
+  );
+};
 
-test('should not increment on max (100)', () => {
-  render(<CounterProvider />)
+test("should not increment on max (100)", () => {
+  render(<CounterProvider />);
 
-  const counter = screen.getByText('100')
-  const incrementButton = screen.getByText('one up')
-  fireEvent.click(incrementButton)
-  expect(counter.textContent).toEqual('100')
-})
+  const counter = screen.getByText("100");
+  const incrementButton = screen.getByText("one up");
+  fireEvent.click(incrementButton);
+  expect(counter.textContent).toEqual("100");
+});
 ```
 
-## Custom hooks
+## 自定义 Hook
 
-If you have complex atoms, sometimes you want to test them in isolation.
+如果你有复杂的原子，有时你想单独测试它们。
 
-For that, you can use [React Hooks Testing Library](https://github.com/testing-library/react-hooks-testing-library).
-Here's an example below:
+为此，您可以使用 [React Hooks 测试库](https://github.com/testing-library/react-hooks-testing-library)。
+下面是一个例子：
 
 `countAtom.ts`:
 
 ```ts
-import { useAtom } from 'jotai'
-import { atomWithReducer } from 'jotai/utils'
+import { useAtom } from "jotai";
+import { atomWithReducer } from "jotai/utils";
 
-const reducer = (state: number, action?: 'INCREASE' | 'DECREASE') => {
+const reducer = (state: number, action?: "INCREASE" | "DECREASE") => {
   switch (action) {
-    case 'INCREASE':
-      return state + 1
-    case 'DECREASE':
-      return state - 1
+    case "INCREASE":
+      return state + 1;
+    case "DECREASE":
+      return state - 1;
     case undefined:
-      return state
+      return state;
   }
-}
-export const countAtom = atomWithReducer(0, reducer)
+};
+export const countAtom = atomWithReducer(0, reducer);
 ```
 
 `countAtom.test.ts`:
 
 ```ts
-import { renderHook, act } from '@testing-library/react-hooks'
-import { useAtom } from 'jotai'
-import { countAtom } from './countAtom'
+import { renderHook, act } from "@testing-library/react-hooks";
+import { useAtom } from "jotai";
+import { countAtom } from "./countAtom";
 
-test('should increment counter', () => {
-  const { result } = renderHook(() => useAtom(countAtom))
+test("should increment counter", () => {
+  const { result } = renderHook(() => useAtom(countAtom));
 
   act(() => {
-    result.current[1]('INCREASE')
-  })
+    result.current[1]("INCREASE");
+  });
 
-  expect(result.current[0]).toBe(1)
-})
+  expect(result.current[0]).toBe(1);
+});
 ```
 
-## Example with React-Native
+## 使用 React-Native 的示例
 
-Of course, you can test React-Native components too the same way, with or without `Provider`.
+当然，你也可以用同样的方式测试 React-Native 组件，有或没有 `Provider`。
 
 ```tsx
-import React from 'react'
-import { render, fireEvent } from '@testing-library/react-native'
-import { Counter } from './counter'
+import React from "react";
+import { render, fireEvent } from "@testing-library/react-native";
+import { Counter } from "./counter";
 
-test('should increment counter', () => {
+test("should increment counter", () => {
   // Arrange
-  const { getByText } = render(<Counter />)
-  const counter = getByText('0')
-  const incrementButton = getByText('one up')
+  const { getByText } = render(<Counter />);
+  const counter = getByText("0");
+  const incrementButton = getByText("one up");
   // Act
-  fireEvent.press(incrementButton)
+  fireEvent.press(incrementButton);
   // Assert
-  expect(counter.props.children.toString()).toEqual('1')
-})
+  expect(counter.props.children.toString()).toEqual("1");
+});
 ```
