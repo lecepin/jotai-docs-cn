@@ -52,9 +52,6 @@ export const Menu = () => {
       >
         <div className="max-h-full w-full overflow-y-scroll !overscroll-none rounded-lg border border-gray-300 bg-white p-8 shadow-2xl dark:border-gray-800 dark:bg-gray-950 dark:!shadow-none">
           <div className="px-3 pb-16 sm:pb-0">
-            <div className="-mx-3 mb-6">
-              <SearchButton className="w-full" />
-            </div>
             <Docs />
           </div>
           <div className="z-70 fixed left-8 right-8 bottom-8 sm:left-auto sm:right-16 sm:bottom-16">
