@@ -4,50 +4,46 @@ description: This doc describes molecules integration.
 nav: 4.11
 ---
 
-Jotai atoms provide a basic solution to optimize re-renders.
-Atoms defined globally can depend on other atoms,
-but they can't depend on props and state within a component tree.
-It's possible to define atoms within a component tree,
-but then you would need to pass those atoms in some ways
-(for example, [atoms-in-atom](../guides/atoms-in-atom.mdx).)
+Jotai atoms 提供了优化重新渲染的基本解决方案。
+全局定义的原子可以依赖于其他原子，但它们不能依赖于组件树中的属性和状态。
+可以在组件树中定义原子，但是您需要以某些方式传递这些原子（例如，[atoms-in-atom](../guides/atoms-in-atom.mdx)。）
 
-[jotai-molecules](https://github.com/saasquatch/jotai-molecules) is
-a third-party library to help such use cases.
+[jotai-molecules](https://github.com/saasquatch/jotai-molecules) 是帮助此类用例的第三方库。
 
-See [Motivation](https://github.com/saasquatch/jotai-molecules#motivation) for more details.
+有关详细信息，请参阅[动机](https://github.com/saasquatch/jotai-molecules#motivation)。
 
-## Install
+## 安装
 
 ```
 yarn add jotai-molecules
 ```
 
-## Counter Example
+## Counter 示例
 
 ```jsx
-import { atom, useAtom } from 'jotai'
+import { atom, useAtom } from "jotai";
 import {
   molecule,
   useMolecule,
   createScope,
   ScopeProvider,
-} from 'jotai-molecules'
+} from "jotai-molecules";
 
-const InitialCountScope = createScope(0)
+const InitialCountScope = createScope(0);
 const countMolecule = molecule((getMol, getScope) => {
-  const initialCont = getScope(InitialCountScope)
-  return atom(initialCont)
-})
+  const initialCont = getScope(InitialCountScope);
+  return atom(initialCont);
+});
 
 const Counter = () => {
-  const countAtom = useMolecule(countMolecule)
-  const [count, setCount] = useAtom(countAtom)
+  const countAtom = useMolecule(countMolecule);
+  const [count, setCount] = useAtom(countAtom);
   return (
     <div>
       {count} <button onClick={() => setCount((c) => c + 1)}>+1</button>
     </div>
-  )
-}
+  );
+};
 
 const App = () => (
   <div>
@@ -65,7 +61,7 @@ const App = () => (
     <Counter />
     <Counter />
   </div>
-)
+);
 ```
 
 <CodeSandbox id="6dvlzf" />
