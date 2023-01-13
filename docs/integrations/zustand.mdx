@@ -4,17 +4,15 @@ description: This doc describes Zustand integration.
 nav: 4.06
 ---
 
-Jotai's state resides in React, but sometimes it would be nice
-to interact with the world outside React.
+Jotai 的状态驻留在 React 中，但有时与 React 之外的世界交互会很好。
 
-Zustand provides a store interface that can be used to hold some values
-and sync with atoms in Jotai.
+Zustand 提供了一个 store 接口，可用于保存一些值并与 Jotai 中的原子同步。
 
-This only uses the vanilla api of zustand.
+这仅使用 zustand 的原生 api。
 
-## Install
+## 安装
 
-You have to install `zustand` and `jotai-zustand` to use this feature.
+您必须安装 `zustand` 和 `jotai-zustand` 才能使用此功能。
 
 ```
 npm install zustand jotai-zustand
@@ -24,33 +22,32 @@ yarn add zustand jotai-zustand
 
 ## atomWithStore
 
-`atomWithStore` creates a new atom with zustand store.
-It's two-way binding and you can change the value from both ends.
+`atomWithStore` 使用 zustand store 创建一个新原子。
+它是双向绑定，您可以双向更改值。
 
 ```jsx
-import { useAtom } from 'jotai'
-import { atomWithStore } from 'jotai-zustand'
-import create from 'zustand/vanilla'
+import { useAtom } from "jotai";
+import { atomWithStore } from "jotai-zustand";
+import create from "zustand/vanilla";
 
-const store = create(() => ({ count: 0 }))
-const stateAtom = atomWithStore(store)
+const store = create(() => ({ count: 0 }));
+const stateAtom = atomWithStore(store);
 const Counter = () => {
-  const [state, setState] = useAtom(stateAtom)
+  const [state, setState] = useAtom(stateAtom);
 
   return (
     <>
       count: {state.count}
       <button
-        onClick={() =>
-          setState((prev) => ({ ...prev, count: prev.count + 1 }))
-        }>
+        onClick={() => setState((prev) => ({ ...prev, count: prev.count + 1 }))}
+      >
         button
       </button>
     </>
-  )
-}
+  );
+};
 ```
 
-### Examples
+### 示例
 
 <CodeSandbox id="mqtugt" />

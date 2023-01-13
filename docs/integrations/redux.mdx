@@ -4,15 +4,13 @@ description: This doc describes Redux integration.
 nav: 4.07
 ---
 
-Jotai's state resides in React, but sometimes it would be nice
-to interact with the world outside React.
+Jotai 的状态驻留在 React 中，但有时与 React 之外的世界交互会很好。
 
-Redux provides a store interface that can be used to store some values
-and sync with atoms in Jotai.
+Redux 提供了一个 store 接口，可用于存储一些值并与 Jotai 中的原子同步。
 
-## Install
+## 安装
 
-You have to install `redux` and `jotai-redux` to use this feature.
+您必须安装 `redux` 和 `jotai-redux` 才能使用此功能。
 
 ```
 npm install redux jotai-redux
@@ -22,36 +20,36 @@ yarn add redux jotai-redux
 
 ## atomWithStore
 
-`atomWithStore` creates a new atom with redux store.
-It's two-way binding and you can change the value from both ends.
+`atomWithStore` 使用 redux store 创建一个新的 atom。
+它是双向绑定，您可以双向更改值。
 
 ```jsx
-import { useAtom } from 'jotai'
-import { atomWithStore } from 'jotai-redux'
-import { createStore } from 'redux'
+import { useAtom } from "jotai";
+import { atomWithStore } from "jotai-redux";
+import { createStore } from "redux";
 
-const initialState = { count: 0 }
-const reducer = (state = initialState, action: { type: 'INC' }) => {
-  if (action.type === 'INC') {
-    return { ...state, count: state.count + 1 }
+const initialState = { count: 0 };
+const reducer = (state = initialState, action: { type: "INC" }) => {
+  if (action.type === "INC") {
+    return { ...state, count: state.count + 1 };
   }
-  return state
-}
-const store = createStore(reducer)
-const storeAtom = atomWithStore(store)
+  return state;
+};
+const store = createStore(reducer);
+const storeAtom = atomWithStore(store);
 
 const Counter = () => {
-  const [state, dispatch] = useAtom(storeAtom)
+  const [state, dispatch] = useAtom(storeAtom);
 
   return (
     <>
       count: {state.count}
-      <button onClick={() => dispatch({ type: 'INC' })}>button</button>
+      <button onClick={() => dispatch({ type: "INC" })}>button</button>
     </>
-  )
-}
+  );
+};
 ```
 
-### Examples
+### 示例
 
 <CodeSandbox id="487792" />

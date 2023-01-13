@@ -4,17 +4,15 @@ description: This doc describes Valtio integration.
 nav: 4.05
 ---
 
-Jotai's state resides in React, but sometimes it would be nice
-to interact with the world outside React.
+Jotai 的状态驻留在 React 中，但有时与 React 之外的世界交互会很好。
 
-Valtio provides a proxy interface that can be used to store some values
-and sync with atoms in Jotai.
+Valtio 提供了一个代理接口，可用于存储一些值并与 Jotai 中的原子同步。
 
-This only uses the vanilla api of valtio.
+这仅使用 valtio 的原生 api。
 
-## Install
+## 安装
 
-You have to install `valtio` and `jotai-valtio` to use this feature.
+您必须安装 `valtio` 和 `jotai-valtio` 才能使用此功能。
 
 ```
 npm install valtio jotai-valtio
@@ -24,47 +22,46 @@ yarn add valtio jotai-valtio
 
 ## atomWithProxy
 
-`atomWithProxy` creates a new atom with valtio proxy.
-It's two-way binding and you can change the value from both ends.
+`atomWithProxy` 使用 valtio 代理创建一个新原子。
+它是双向绑定，您可以双向更改值。
 
 ```jsx
-import { useAtom } from 'jotai'
-import { atomWithProxy } from 'jotai-valtio'
-import { proxy } from 'valtio/vanilla'
+import { useAtom } from "jotai";
+import { atomWithProxy } from "jotai-valtio";
+import { proxy } from "valtio/vanilla";
 
-const proxyState = proxy({ count: 0 })
-const stateAtom = atomWithProxy(proxyState)
+const proxyState = proxy({ count: 0 });
+const stateAtom = atomWithProxy(proxyState);
 const Counter = () => {
-  const [state, setState] = useAtom(stateAtom)
+  const [state, setState] = useAtom(stateAtom);
 
   return (
     <>
       count: {state.count}
       <button
-        onClick={() =>
-          setState((prev) => ({ ...prev, count: prev.count + 1 }))
-        }>
+        onClick={() => setState((prev) => ({ ...prev, count: prev.count + 1 }))}
+      >
         button
       </button>
     </>
-  )
-}
+  );
+};
 ```
 
-### Parameters
+### 参数
 
 ```
 atomWithProxy(proxyObject, options?)
 ```
 
-**proxyObject** (required): the Valtio proxy object you want to derive the atom from
+**proxyObject** (required): 要从中派生原子的 Valtio 代理对象
 
-**options.sync** (optional): makes the atom update synchronously instead of waiting for batched updates, similar to [`valtio/useSnapshot`](https://github.com/pmndrs/valtio#update-synchronously). This will result in more renders, but have more guarantees that it syncs with other Jotai atoms.
+**options.sync** (optional): 使原子同步更新而不是等待批量更新，类似于 [`valtio/useSnapshot`](https://github.com/pmndrs/valtio#update-synchronously)。 这将导致更多渲染，但有更多保证它与其他 Jotai 原子同步。
 
 ```
 atomWithProxy(proxyObject, { sync: true })
 ```
 
-### Examples
+### 示例
 
 <CodeSandbox id="ew98ll" />

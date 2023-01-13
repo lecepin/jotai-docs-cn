@@ -4,21 +4,21 @@ description: This doc describes URQL integration.
 nav: 4.08
 ---
 
-## Install
+## 安装
 
-You have to install `jotai-urql`, `@urql/core` and `wonka` to use the integration.
+您必须安装 `jotai-urql`、`@urql/core` 和 `wonka` 才能使用集成。
 
 ```
 yarn add jotai-urql @urql/core wonka
 ```
 
-## Exported functions
+## 导出函数
 
-- `atomsWithQuery` for [client.query](https://formidable.com/open-source/urql/docs/api/core/#clientquery)
-- `atomsWithMutation` for [client.mutation](https://formidable.com/open-source/urql/docs/api/core/#clientmutation)
-- `atomsWithSubscription` for [client.subscription](https://formidable.com/open-source/urql/docs/api/core/#clientsubscription)
+- [client.query] 的`atomsWithQuery`(https://formidable.com/open-source/urql/docs/api/core/#clientquery)
+- [client.mutation] 的`atomsWithMutation`(https://formidable.com/open-source/urql/docs/api/core/#clientmutation)
+- [client.subscription] 的`atomsWithSubscription`(https://formidable.com/open-source/urql/docs/api/core/#clientsubscription)
 
-All three functions follow the same signature.
+所有三个函数都遵循相同的签名。
 
 ```ts
 const [dataAtom, statusAtom] = atomsWithSomething(
@@ -26,108 +26,108 @@ const [dataAtom, statusAtom] = atomsWithSomething(
   getVariables,
   getContext,
   getClient
-)
+);
 ```
 
-The first three parameters will be arguments to those functions (For mutation, it's empty).
-The last optional `getClient` parameter is a function that returns [Client](https://formidable.com/open-source/urql/docs/api/core/#client).
+前三个参数将是这些函数的参数（对于 mutation，它是空的）。
+最后一个可选的 `getClient` 参数是一个返回 [Client](https://formidable.com/open-source/urql/docs/api/core/#client) 的函数。
 
-The return values have two atoms.
-The first one is called `dataAtom` and it's an atom for the data from the observer. `dataAtom` requires Suspense.
-The second one is called `statusAtom` and it's an atom for the full result from the observer. `statusAtom` doesn't require Suspnse.
-The data from the observer is also included in `statusAtom`,
-so if you don't use Suspense, you don't need to use `dataAtom`.
+返回值有两个原子。
+第一个称为 `dataAtom`，它是来自观察者的数据的原子。 `dataAtom` 需要 Suspense。
+第二个称为 `statusAtom`，它是来自观察者的完整结果的原子。 `statusAtom` 不需要 Suspnse。
+来自观察者的数据也包含在 `statusAtom` 中，所以如果你不使用 Suspense，你不需要使用 `dataAtom`。
 
 ## atomsWithQuery
 
-`atomsWithQuery` creates new atoms with a query. It internally uses [client.query](https://formidable.com/open-source/urql/docs/api/core/#clientquery).
+`atomsWithQuery` 使用查询创建新原子。 它在内部使用 [client.query](https://formidable.com/open-source/urql/docs/api/core/#clientquery)。
 
 ```jsx
-import { useAtom } from 'jotai'
-import { createClient } from '@urql/core'
-import { atomsWithQuery } from 'jotai-urql'
+import { useAtom } from "jotai";
+import { createClient } from "@urql/core";
+import { atomsWithQuery } from "jotai-urql";
 
-const client = createClient({ url: '...' })
+const client = createClient({ url: "..." });
 
-const idAtom = atom(1)
+const idAtom = atom(1);
 const [userAtom] = atomsWithQuery(
-  '{ user { first_name last_name } }', // query
+  "{ user { first_name last_name } }", // query
   (get) => ({ id: get(idAtom) }), // variables
   undefined, // context
   () => client
-)
+);
 
 const UserData = () => {
-  const [{ data }] = useAtom(userAtom)
-  return <div>{JSON.stringify(data)}</div>
-}
+  const [{ data }] = useAtom(userAtom);
+  return <div>{JSON.stringify(data)}</div>;
+};
 ```
 
-### Examples
+### 示例
 
-#### Basic demo
+#### 基础演示
 
-FIXME: Update demo
+FIXME: 更新演示
 
 <CodeSandbox id="zujf6" />
 
 ## atomsWithMutation
 
-`atomsWithMutation` creates new atoms with a mutation. It internally uses [client.mutation](https://formidable.com/open-source/urql/docs/api/core/#clientmutation).
+`atomsWithMutation` 创建具有 mutation 的新原子。 它在内部使用 [client.mutation](https://formidable.com/open-source/urql/docs/api/core/#clientmutation)。
 
 ```jsx
-import { useAtom } from 'jotai'
-import { createClient } from '@urql/core'
-import { atomsWithMutation } from 'jotai-urql'
+import { useAtom } from "jotai";
+import { createClient } from "@urql/core";
+import { atomsWithMutation } from "jotai-urql";
 
-const client = createClient({ url: '...' })
+const client = createClient({ url: "..." });
 
-const [fooAtom] = atomsWithMutation(() => client)
+const [fooAtom] = atomsWithMutation(() => client);
 
 const FooData = () => {
-  const [{ data }, mutate] = useAtom(fooAtom)
+  const [{ data }, mutate] = useAtom(fooAtom);
   return (
     <div>
-      {JSON.stringify(data)}{' '}
+      {JSON.stringify(data)}{" "}
       <button
         onClick={() =>
-          mutate({ query: 'mutation Foo { text }', variables: {} })
-        }>
+          mutate({ query: "mutation Foo { text }", variables: {} })
+        }
+      >
         Click me
       </button>
     </div>
-  )
-}
+  );
+};
 ```
 
-### Examples
+### 示例
 
-TODO: create example
+TODO: 创建示例
 
 ## atomsWithSubscription
 
-`atomsWithSubscription` creates new atoms with a subscription. It internally uses [client.subscription](https://formidable.com/open-source/urql/docs/api/core/#clientsubscription).
+`atomsWithSubscription` 通过订阅创建新原子。 它在内部使用 [client.subscription](https://formidable.com/open-source/urql/docs/api/core/#clientsubscription)。
 
 ```jsx
-import { useAtom } from 'jotai'
-import { createClient } from '@urql/core'
-import { atomsWithSubscription } from 'jotai-urql'
+import { useAtom } from "jotai";
+import { createClient } from "@urql/core";
+import { atomsWithSubscription } from "jotai-urql";
 
-const client = createClient({ url: '...' })
+const client = createClient({ url: "..." });
 
 const [fooAtom] = atomsWithSubscription(
-  'subscription Foo { text }', // query
+  "subscription Foo { text }", // query
   () => ({}), // variables
   undefined, // context
   () => client
-)
+);
 
 const FooData = () => {
-  const [{ data }] = useAtom(fooAtom)
-  return <div>{JSON.stringify(data)}</div>
-}
+  const [{ data }] = useAtom(fooAtom);
+  return <div>{JSON.stringify(data)}</div>;
+};
 ```
 
-### Examples
+### 示例
 
-TODO: create example
+TODO: 创建示例
