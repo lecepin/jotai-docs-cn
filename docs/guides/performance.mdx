@@ -4,125 +4,125 @@ description: How to limit extra re-renders
 nav: 3.12
 ---
 
-**Note**: This guide has room for improvement. Consider it as FYI for now.
+**注意**：本指南有改进的余地。 现在将其视为仅供参考。
 
-Jotai & React gives us quite a few tools to manage the re-renders that happen in the app lifecycle.
-First, please read about the difference [between render & commit](https://reactjs.org/blog/2018/09/10/introducing-the-react-profiler.html#browsing-commits), because that's very important to understand before going further.
+Jotai & React 为我们提供了很多工具来管理应用程序生命周期中发生的重新渲染。
+首先，请阅读 [呈现和提交](https://reactjs.org/blog/2018/09/10/introducing-the-react-profiler.html#browsing-commits) 之间的区别，因为这对 在进一步了解之前。
 
-### Cheap renders
+### 轻量的渲染
 
-As seen in the [core section](../api/core.mdx), due to React 18 default behaviour (but overall good practice), you have to make sure your component functions are _idempotent_.
-They will be called multiple times during the render phase, even at mount. So we need to keep our renders cheap at all cost!
+如 [核心部分](../api/core.mdx) 所示，由于 React 18 的默认行为（但总体而言是良好实践），您必须确保您的组件函数是 _幂等的_。
+它们将在渲染阶段被多次调用，即使是在挂载时。 所以我们需要不惜一切代价保持我们的渲染轻量！
 
-#### Heavy computation
+#### 繁重的计算
 
-Always make heavy computation outside of the React lifecycle (in actions for example)
+始终在 React 生命周期之外进行大量计算（例如在操作中）
 
-Dont's:
+不要：
 
 ```js
-// Heavy computation for each item
-const selector = (s) => s.filter(heavyComputation)
+// 每个 item 重计算
+const selector = (s) => s.filter(heavyComputation);
 const Profile = () => {
-  const [computed] = useAtom(selectAtom(friendsAtom, selector))
-}
+  const [computed] = useAtom(selectAtom(friendsAtom, selector));
+};
 ```
 
-Do's:
+要:
 
 ```js
-const friendsAtom = atom([])
+const friendsAtom = atom([]);
 const fetchFriendsAtom = atom(null, async (get, set, payload) => {
-  // Fetch all friends
-  const res = await fetch('https://...')
-  // Make heavy computation once only
-  const computed = res.filter(heavyComputation)
-  set(friendsAtom, computed)
-})
-// Usage in components
+  // 捕获所有 friends
+  const res = await fetch("https://...");
+  // 重计算只有一次
+  const computed = res.filter(heavyComputation);
+  set(friendsAtom, computed);
+});
+// 在组件中使用
 const Profile = () => {
-  const [friends] = useAtom(friendsAtom)
-}
+  const [friends] = useAtom(friendsAtom);
+};
 ```
 
-#### Small components
+#### 小组件
 
-Observed atoms should only re-render small parts of your application that required an update. The less comparison React has to make, the shorter your render time will be.
+观察到的原子应该只重新渲染需要更新的应用程序的一小部分。 React 进行的比较越少，渲染时间就越短。
 
-Dont's:
+不要：
 
 ```jsx
 const Profile = () => {
-  const [name] = useAtom(nameAtom)
-  const [ageAtom] = useAtom(ageAtom)
+  const [name] = useAtom(nameAtom);
+  const [ageAtom] = useAtom(ageAtom);
   return (
     <>
       <div>{name}</div>
       <div>{age}</div>
     </>
-  )
-}
+  );
+};
 ```
 
-Do's:
+要：
 
 ```jsx
 const NameComponent = () => {
-  const [name] = useAtom(nameAtom)
-  return <div>{name}</div>
-}
+  const [name] = useAtom(nameAtom);
+  return <div>{name}</div>;
+};
 const AgeComponent = () => {
-  const [age] = useAtom(ageAtom)
-  return <div>{age}</div>
-}
+  const [age] = useAtom(ageAtom);
+  return <div>{age}</div>;
+};
 const Profile = () => {
   return (
     <>
       <NameComponent />
       <AgeComponent />
     </>
-  )
-}
+  );
+};
 ```
 
-### Render on demand
+### 按需渲染
 
-Usually, the main performance overhead will come from re-rendering parts of your app that did not need to, or way more than they should.
+通常，主要的性能开销将来自重新渲染您的应用程序中不需要的部分，或者比他们应该的更多的部分。
 
-We have a few tools to deal with "when" React should render our components. If you have not seen the usage of `useMemo` and `useCallback`, please check the offcial React documentation for more info before going further.
-They are of great use to reduce un-necessary renders where your app is not fluid.
+我们有一些工具来处理“何时”React 应该渲染我们的组件。 如果您还没有看到 `useMemo` 和 `useCallback` 的用法，请在继续之前查看 React 官方文档以获取更多信息。
+它们对于减少应用程序不流畅时不必要的渲染非常有用。
 
-But Jotai also provides its set of tools to handle the "when" our atoms should trigger a re-render.
+但 Jotai 还提供了一套工具来处理我们的原子应该在“何时”触发重新渲染。
 
-- Out of the box, Jotai encourages you to split your data into atomic parts, hence each atom is stored separately and will only trigger a re-render when their own value change
-- `selectAtom` allows you to subscribe to specific part of a large object and only re-render on value change
-- `focusAtom` same as selectAtom, but creating a new atom for the part, giving a setter to update that specific part easily
-- `splitAtom` does the work of selectAtom/focus atom for a dynamic list
+- 开箱即用，Jotai 鼓励您将数据拆分为原子部分，因此每个原子都是单独存储的，并且只有在它们自己的值发生变化时才会触发重新渲染
+- `selectAtom` 允许您订阅大型对象的特定部分，并且仅在值更改时重新呈现
+- `focusAtom` 与 selectAtom 相同，但为该部分创建一个新原子，提供一个 setter 以轻松更新该特定部分
+- `splitAtom` 为动态列表完成 selectAtom/focus atom 的工作
 
-While this seems simplistic, it is simple to reason about. That was the goal, let's keep it simple to keep it fast.
+看起来很简单，推理起来也很简单。 这就是目标，让我们保持简单以保持快速。
 
-#### Frequent or rare updates
+#### 频繁或罕见的更新
 
-Ask yourself whether your atom is usually going to be frequently update or more rarely.
-Let's imagine an atom containing an object that changes almost every second, it may not be best suited to "focus" on a specific properties of this object using `focusAtom`, because anyway they will all re-render in the same time, so best adding no overhead and not create any more atoms.
+问问自己，您的 Atom 通常会频繁更新还是很少更新。
+让我们想象一个原子包含一个几乎每秒都在变化的对象，它可能不适合使用 `focusAtom` “focus”这个对象的特定属性，因为无论如何它们都会同时重新渲染，所以最好 不增加开销，也不创建更多原子。
 
-On the other hand, if your object has properties that rarely change, and most importantly, that change independently from the other properties, then you may want to use `focusAtom` or `selectAtom` to prevent un-necessary renders.
+另一方面，如果您的对象具有很少更改的属性，最重要的是，这些属性的更改独立于其他属性，那么您可能希望使用 `focusAtom` 或`selectAtom` 来防止不必要的渲染。
 
-## "Stop observing" pattern
+## “停止观察”模式
 
-An example of pattern that can be interesting is to use `useMemo` to read an atom value only once, in order to prevent further renders even if the atom changes down the line.
+一个有趣的模式示例是使用 `useMemo` 仅读取一次原子值，以防止进一步渲染，即使原子在线发生变化也是如此。
 
-Let's imagine a case, you have a list of toggles. Let's view 2 approaches for it:
+让我们想象一个案例，您有一个切换列表。 让我们看看它的两种方法：
 
-### Standard pattern
+### 标准模式
 
-We create our store of 3 toggles set to false
+我们创建了 3 个设置为 false 的 store
 
 ```tsx
-const togglesAtom = atom([false, false, false])
+const togglesAtom = atom([false, false, false]);
 ```
 
-Then, when the user clicks one toggle, we update it
+然后，当用户点击一个开关时，我们更新它
 
 ```tsx
 const Item = ({ index, val }) => {
@@ -138,20 +138,20 @@ const List = () => {
 }
 ```
 
-With this approach, updating any toggle will cause all `<Item />` to re-render.
+使用这种方法，更新任何切换都会导致所有 `<Item />` 重新呈现。
 
-### Memoized pattern
+### Memoized 模式
 
-Now let's try to memoize the value on the first render
+现在让我们尝试 memoize 第一次渲染的值
 
 ```tsx
 const List = () => {
-  const [toggles] = useMemo(() => useAtom(togglesAtom), [])
-  return toggles.map((val, index) => <Item id={index} initialValue={val} />)
-}
+  const [toggles] = useMemo(() => useAtom(togglesAtom), []);
+  return toggles.map((val, index) => <Item id={index} initialValue={val} />);
+};
 ```
 
-But now it means we have to handle the changes locally in each `Item`
+但现在这意味着我们必须在每个 `Item` 中本地处理更改
 
 ```tsx
 const Item = ({ index, initialValue }) => {
@@ -159,10 +159,10 @@ const Item = ({ index, initialValue }) => {
   const [toggle, setToggle] = React.useMemo() => useAtom(atom(val)), [])
 
   const onPress = () => {
-    setToggle(!toggle) // Update locally
-    setToggles(old => [...old, [index]: !val]) // Update the main atom
+    setToggle(!toggle) // 更新本地
+    setToggles(old => [...old, [index]: !val]) // 更新主要原子
   }
 }
 ```
 
-Now if you update one toggle, it will only re-render the corresponding `<Item />`
+现在如果你更新一个开关，它只会重新渲染相应的 `<Item />`

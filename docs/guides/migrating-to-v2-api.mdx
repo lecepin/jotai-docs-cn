@@ -6,36 +6,34 @@ nav: 3.13
 
 RFC: https://github.com/pmndrs/jotai/discussions/1514
 
-Jotai v1 is released at June 2022, and there has been various feedbacks.
-React also proposes first-class support for promises.
-Jotai v2 will have a new API.
+Jotai v1 于 2022 年 6 月发布，收到了各种反馈。
+React 还提出了对 promise 的支持。
+Jotai v2 将有一个新的 API。
 
-Unfortunately, there are some breaking changes along with new features.
+不幸的是，随着新功能的出现，有一些重大变化。
 
-## What are new features
+## 什么是新功能
 
-### Vanilla library
+### Vanilla 库
 
-Jotai comes with vanilla (non-React) functions
-and React functions separately.
+Jotai 分别带有 vanilla（非 React）函数和 React 函数。
 
 ### Store API
 
-Jotai exposes store interface so that you can directly manipulate atom values.
+Jotai 暴露了存储接口，以便您可以直接操作原子值。
 
 ```js
-import { createStore } from 'jotai/vanilla'
+import { createStore } from "jotai/vanilla";
 
-const store = createStore()
-store.set(fooAtom, 'foo')
+const store = createStore();
+store.set(fooAtom, "foo");
 ```
 
-You can also create your own React Context to pass a store.
+您还可以创建自己的 React 上下文来传递 store。
 
-### More flexible atom `write` function
+### 更灵活的原子`write`函数
 
-The write function can accept multiple arguments,
-and return a value.
+write 函数可以接受多个参数，并返回一个值。
 
 ```js
 atom(
@@ -47,11 +45,11 @@ atom(
 )
 ```
 
-## What are breaking
+## 什么东西坏了
 
-### Import statements
+### Import 声明
 
-The new API is provided from different entry points:
+新的 API 从不同的入口点提供：
 
 - `jotai/vanilla`
 - `jotai/vanilla/utils`
@@ -60,70 +58,69 @@ The new API is provided from different entry points:
 - `jotai/react/utils`
 
 ```js
-import { atom } from 'jotai/vanilla'
-import { useAtom } from 'jotai/react'
+import { atom } from "jotai/vanilla";
+import { useAtom } from "jotai/react";
 ```
 
-These new entry points are added in v1.11.0 as pre-release, which will continue to work after v2.0.0 release.
+这些新的入口点作为预发布版本添加到 v1.11.0 中，将在 v2.0.0 发布后继续工作。
 
-In v2.0.0, they are the defaults and old entry points simply refer to the new ones.
+在 v2.0.0 中，它们是默认值，旧入口点仅引用新入口点。
 
 ```js
 // v2
-import { atom } from 'jotai' // is same as 'jotai/vanilla'
-import { useAtom } from 'jotai' // is same as 'jotai/react'
+import { atom } from "jotai"; // 与'jotai/vanilla'相同
+import { useAtom } from "jotai"; // 与 'jotai/react' 相同
 ```
 
-### Async atoms are no longer special
+### 异步原子不再特殊
 
-Async atoms are just normal atoms with promise values.
-Atoms getter functions don't resolve promises.
-On the other hand, `useAtom` hook continues to resolve promises.
+异步原子只是具有 promise 值的普通原子。
+原子 getter 函数不解析 promise。
+另一方面，`useAtom` hook 继续解析 promise。
 
-### Writable atom type is changed (TypeScript only)
+### 可写原子类型已更改（仅限 TypeScript）
 
 ```ts
-// Old
+// 旧
 WritableAtom<Value, Arg, Result extends void | Promise<void>>
 
-// New
+// 新
 WritableAtom<Value, Args extends unknown[], Result>
 ```
 
-In general, we should avoid using `WritableAtom` type directly.
+一般来说，我们应该避免直接使用 `WritableAtom` 类型。
 
-### Some functions are dropped
+### 一些功能被删除
 
-- Provider's `initialValues` prop is removed, because `store` is more flexible.
-- Provider's scope props is removed, because you can create own context.
-- `abortableAtom` util is removed, becuase the feature is included by default
-- `waitForAll` util is removed, because `Promise.all` just works
+- Provider 的 `initialValues` 属性被移除，因为 `store` 更灵活。
+- Provider 的范围属性被删除，因为您可以创建自己的上下文。
+- `abortableAtom` 工具被删除，因为默认包含该功能
+- `waitForAll` 工具被删除，因为 `Promise.all` 可以正常工作
 
-## Migration guides
+## 迁移指南
 
-### Async atoms
+### 异步原子
 
-`get` function for read function of async atoms
-doesn't resolve promises, so you have to put `await`.
+`get`函数用于异步原子的读取函数不解析 promise，所以你必须放 `await`。
 
-In short, the change is something like the following.
-(If you are TypeScript users, types will tell where to changes.)
+简而言之，更改如下所示。
+（如果您是 TypeScript 用户，类型会告诉您在哪里更改。）
 
-#### Previous API
-
-```js
-const asyncAtom = atom(async () => 'hello')
-const derivedAtom = atom((get) => get(asyncAtom).toUppercase())
-```
-
-#### New API
+#### 以前的 API
 
 ```js
-const asyncAtom = atom(async () => 'hello')
-const derivedAtom = atom(async (get) => (await get(asyncAtom)).toUppercase())
+const asyncAtom = atom(async () => "hello");
+const derivedAtom = atom((get) => get(asyncAtom).toUppercase());
 ```
 
-### Provider's `initialValues` prop
+#### 新 API
+
+```js
+const asyncAtom = atom(async () => "hello");
+const derivedAtom = atom(async (get) => (await get(asyncAtom)).toUppercase());
+```
+
+### Provider 的 `initialValues` 属性
 
 #### Previous API
 
@@ -135,7 +132,7 @@ const countAtom = atom(0)
   </Provider>
 ```
 
-#### New API
+#### 新 API
 
 ```jsx
 const countAtom = atom(0)
@@ -147,44 +144,43 @@ store.set(countAtom, 1)
   </Provider>
 ```
 
-### Provider's `scope` prop
+### Provider 的 `scope` 属性
 
-#### Previous API
+#### 旧 API
 
 ```jsx
 const myScope = Symbol()
 
-  // Parent component
+  // 父组件
   <Provider scope={myScope}>
     ...
   </Provider>
 
-  // Child component
+  // 子组件
   useAtom(..., myScope)
 ```
 
-#### New API
+#### 新 API
 
 ```jsx
 const MyContext = createContext()
 const store = createStore()
 
-  // Parent component
+  // 父组件
   <MyContext.Provider value={store}>
     ...
   </MyContext.Provider>
 
-  // Child Component
+  // 子组件
   const store = useContext(MyContext)
   useAtom(..., { store })
 ```
 
 ### `abortableAtom` util
 
-You no longer need the previous `abortableAtom` util,
-because it's now supported with the normal `atom`.
+您不再需要以前的 `abortableAtom` utils，因为现在普通的 `atom` 支持它。
 
-#### Previous API
+#### 旧 API
 
 ```js
 const asyncAtom = abortableAtom(async (get, { signal }) => {
@@ -192,7 +188,7 @@ const asyncAtom = abortableAtom(async (get, { signal }) => {
 }
 ```
 
-#### New API
+#### 新 API
 
 ```js
 const asyncAtom = atom(async (get, { signal }) => {
@@ -202,22 +198,21 @@ const asyncAtom = atom(async (get, { signal }) => {
 
 ### `waitForAll` util
 
-You no longer need the previous `waitForAll` util,
-because we can use native Promise APIs.
+您不再需要以前的 `waitForAll` 工具，因为我们可以使用原生的 Promise API。
 
-#### Previous API
-
-```js
-const allAtom = waitForAll([fooAtom, barAtom])
-```
-
-#### New API
+#### 旧 API
 
 ```js
-const allAtom = atom((get) => Promise.all([get(fooAtom), get(barAtom)]))
+const allAtom = waitForAll([fooAtom, barAtom]);
 ```
 
-## Some other changes
+#### 新 API
 
-- `atomWithStorage` util's `delayInit` is removed as being default.
-- `useHydrateAtoms` can only accept writable atoms.
+```js
+const allAtom = atom((get) => Promise.all([get(fooAtom), get(barAtom)]));
+```
+
+## 一些其它改变
+
+- `atomWithStorage` util 的 `delayInit` 作为默认值被删除。
+- `useHydrateAtoms` 只能接受可写原子。
