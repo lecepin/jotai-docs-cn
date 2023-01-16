@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkjotai_website=self.webpackChunkjotai_website||[]).push([[883],{429:function(t,e,c){c.r(e),c.d(e,{default:function(){return n}});c(5743);var a=c(7294),i=c(1562);function n(){return(0,a.useEffect)((function(){(0,i.c4)("/")}),[]),null}globalThis.jotaiAtomCache=globalThis.jotaiAtomCache||{cache:new Map,get:function(t,e){return this.cache.has(t)?this.cache.get(t):(this.cache.set(t,e),e)}}}}]);
+//# sourceMappingURL=component---src-pages-404-js-cb5351f054aeb7e393ce.js.map
