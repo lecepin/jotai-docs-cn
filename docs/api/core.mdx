@@ -4,8 +4,8 @@ description: This doc describes core `jotai` bundle.
 nav: 2.01
 ---
 
-- [基础 APIs](#basic-ap-is)
-- [额外 APIs](#additional-ap-is)
+- [基础 APIs](#基础 -ap-is)
+- [额外 APIs](#额外-ap-is)
 
 ## 基础 APIs
 
@@ -204,7 +204,7 @@ function useAtom<Value, Update>(
 function useAtom<Value>(atom: Atom<Value>, scope?: Scope): [Value, never];
 ```
 
-useAtom hook 是读取 Provider 中存储的一个原子值。 它以元组的形式返回原子值和更新函数，就像 useState 一样。 它需要一个使用 `atom()` 创建的原子配置。 最初，Provider 中没有存储任何值。 第一次通过 `useAtom` 使用 atom 时，它会在 Provider 中添加一个初始值。 如果原子是派生原子，则执行读取函数以计算初始值。 当一个原子不再被使用时，意味着使用它的所有组件都被卸载，并且原子配置不再存在，该值将从 Provider 中删除。
+useAtom hook 是读取 Provider 中存储的一个原子值。 它以元组的形式返回原子值和更新函数，就像 `useState` 一样。 它需要一个使用 `atom()` 创建的原子配置。 最初，Provider 中没有存储任何值。 第一次通过 `useAtom` 使用 atom 时，它会在 Provider 中添加一个初始值。 如果原子是派生原子，则执行读取函数以计算初始值。 当一个原子不再被使用时，意味着使用它的所有组件都被卸载，并且原子配置不再存在，该值将从 Provider 中删除。
 
 ```js
 const [value, setValue] = useAtom(anAtom);
@@ -218,8 +218,6 @@ const [value, setValue] = useAtom(anAtom);
 
 ### 原子依赖性如何工作
 
-To begin with, let's explain this. In the current implementation, every time we invoke the "read" function, we refresh the dependencies and dependents. For example, If A depends on B, it means that B is a dependency of A, and A is a dependent of B.
-
 首先，让我们解释一下。 在当前的实现中，每次调用 "read" 函数时，我们都会刷新依赖项和从属项。 例如，如果 A 依赖于 B，则意味着 B 是 A 的依赖项，A 是 B 的依赖项。
 
 ```js
@@ -230,41 +228,37 @@ const uppercaseAtom = atom((get) => get(textAtom).toUpperCase());
 依赖最初是空的。 第一次使用时，我们运行读取函数并知道 `uppercaseAtom` 依赖于 `textAtom`。 `textAtom` 依赖于 `uppercaseAtom`。 因此，将 `uppercaseAtom` 添加到 `textAtom` 的依赖项中。
 当我们重新运行读取函数时（因为它的依赖项 `textAtom` 已更新），依赖项会再次创建，在本例中也是如此。 然后我们删除陈旧的依赖项并替换为最新的依赖项。
 
-### Atoms can be created on demand
+### 原子可以按需创建
 
-While the basic examples here show defining atoms globally outside components,
-there's no restrictions about where or when we can create an atom.
-As long as we remember that atoms are identified by their object referential identity,
-we can create them anytime.
+虽然这里的基本示例显示了在组件外部全局定义原子，但对于我们可以在何处或何时创建原子没有任何限制。
+只要我们记得原子是由它们的对象引用身份标识的，我们就可以随时创建它们。
 
-If you create atoms in render functions, you would typically want to use
-a hook like `useRef` or `useMemo` for memoization. If not, the atom would be re-created each time the component renders.
+如果您在渲染函数中创建原子，您通常希望使用像 `useRef` 或 `useMemo` 这样的 hook 来进行 memoization。 否则，每次组件渲染时都会重新创建原子。
 
-You can create an atom and store it with `useState` or even in another atom.
-See an example in [issue #5](https://github.com/pmndrs/jotai/issues/5).
+您可以创建一个原子并将其存储在 `useState` 中，甚至可以存储在另一个原子中。
+请参阅[问题 #5](https://github.com/pmndrs/jotai/issues/5) 中的示例。
 
-You can cache atoms somewhere globally.
-See [this example](https://twitter.com/dai_shi/status/1317653548314718208) or
-[that example](https://github.com/pmndrs/jotai/issues/119#issuecomment-706046321).
+您可以在全局某处缓存原子。
+请参阅[此示例](https://twitter.com/dai_shi/status/1317653548314718208) 或
+[那个例子](https://github.com/pmndrs/jotai/issues/119#issuecomment-706046321)。
 
-Check [`atomFamily`](../api/utils.mdx#atom-family) in utils for parameterized atoms.
+检查参数化原子的 utils 中的 [`atomFamily`](../api/utils.mdx#atom-family)。
 
-## Additional APIs
+## 额外 APIs
 
 ## Provider
 
-The `Provider` component is to provide state for a component sub tree.
-Multiple Providers can be used for multiple subtrees, and they can even be nested.
-This works just like React Context.
+`Provider` 组件是为组件子树提供状态。
+多个 Provider 可以用于多个子树，甚至可以嵌套。
+这就像 React 上下文一样工作。
 
-If an atom is used in a tree without a Provider,
-it will use the default state. This is so-called provider-less mode.
+如果在没有 Provider 的树中使用原子，它将使用默认状态。 这就是所谓的无提供者模式。
 
-Providers are useful for three reasons:
+Provider 之所以有用，有以下三个原因：
 
-1. To provide a different state for each sub tree.
-2. To accept initial values of atoms.
-3. To clear all atoms by remounting.
+1. 为每个子树提供不同的状态。
+2. 接受原子的初始值。
+3. 通过重新安装清除所有原子。
 
 ```jsx
 const SubTree = () => (
@@ -283,7 +277,7 @@ const Provider: React.FC<{
 }>;
 ```
 
-Atom configs don't hold values. Atom values reside in separate stores. A Provider is a component that contains a store and provides atom values under the component tree. A Provider works like React context provider. If you don't use a Provider, it works as provider-less mode with a default store. A Provider will be necessary if we need to hold different atom values for different component trees. Provider also has some capabilities described below, which doesn't exist in the provider-less mode.
+Atom 配置不保存值。 原子值驻留在单独的存储中。 Provider 是一个组件，它包含一个存储并在组件树下提供原子值。 Provider 的工作方式类似于 React context provider。 如果您不使用提 Provider，它会以无 Provider 模式使用默认 store 。 如果我们需要为不同的组件树保存不同的原子值，则需要提供者。 Provider 还具有下面描述的一些功能，这些功能在 无 Provider 模式下不存在。
 
 ```jsx
 const Root = () => (
@@ -293,13 +287,12 @@ const Root = () => (
 );
 ```
 
-### `initialValues` prop
+### `initialValues` 属性
 
-A Provider accepts an optional prop `initialValues`, with which you can specify
-some initial atom values.
-The use cases of this are testing and server side rendering.
+Provider 接受一个可选的 prop `initialValues`，您可以使用它指定一些初始原子值。
+其用例是测试和服务器端渲染。
 
-#### Example
+#### 示例
 
 ```jsx
 const TestRoot = () => (
@@ -316,8 +309,8 @@ const TestRoot = () => (
 
 #### TypeScript
 
-The `initialValues` prop is not type friendly.
-We can mitigate it by using a helper function.
+`initialValues` 属性不是类型友好的。
+我们可以通过使用辅助函数来缓解它。
 
 ```ts
 const createInitialValues = () => {
@@ -330,14 +323,19 @@ const createInitialValues = () => {
 };
 ```
 
-### `scope` prop
+### `scope` 属性
 
 A Provider accepts an optional prop `scope` that you can use for a scoped Provider.
 When using atoms with a scope, the provider with the same scope is used.
 The recommendation for the scope value is a unique symbol.
 The primary use case of scope is for library usage.
 
-#### Example
+Provider 接受一个可选的 prop `scope`，您可以将其用于范围内的 Provider。
+当使用具有 scope 的原子时，使用具有相同作用域的 Provider。
+scope 值的建议是一个独特的符号。
+scope 的主要使用在库中。
+
+#### 示例
 
 ```jsx
 const myScope = Symbol();
@@ -394,9 +392,9 @@ export default function App() {
 }
 ```
 
-In case you need to update a value of an atom without reading it, you can use `useSetAtom()`.
+如果你需要在不读取原子的情况下更新它的值，你可以使用 `useSetAtom()` 。
 
-This is especially useful when the performance is a concern, as the `const [, setValue] = useAtom(valueAtom)` will cause unnecessary rerenders on each `valueAtom` update.
+当性能是一个问题时，这特别有用，因为 `const [, setValue] = useAtom(valueAtom)` 会在每次 `valueAtom` 更新时导致不必要的重新渲染。
 
 ## useAtomValue
 
@@ -416,13 +414,13 @@ const Counter = () => {
 };
 ```
 
-Similar to the `useSetAtom` hook, `useAtomValue` allows you to access a read-only atom.
+与 `useSetAtom` hook `类似，useAtomValue` 允许您访问只读原子。
 
-### Some more notes about atoms
+### 关于原子的更多注释
 
-- If you create a primitive atom, it will use predefined read/write functions to emulate `useState` behavior.
-- If you create an atom with read/write functions, they can provide any behavior with some restrictions as follows.
-- `read` function will be invoked during React render phase, so the function has to be pure. What is pure in React is described [here](https://gist.github.com/sebmarkbage/75f0838967cd003cd7f9ab938eb1958f).
-- `write` function will be invoked where you called initially and in useEffect for following invocations. So, you shouldn't call `write` in render.
-- When an atom is initially used with `useAtom`, it will invoke `read` function to get the initial value, this is recursive process. If an atom value exists in Provider, it will be used instead of invoking `read` function.
-- Once an atom is used (and stored in Provider), it's value is only updated if its dependencies are updated (including updating directly with useAtom).
+- 如果您创建一个原始原子，它将使用预定义的 读/写 函数来模拟 `useState` 行为。
+- 如果你创建一个具有 读/写 功能的原子，它们可以提供任何行为，但有一些限制，如下所示。
+- `read` 函数将在 React 渲染阶段调用，因此该函数必须是纯函数。 [此处](https://gist.github.com/sebmarkbage/75f0838967cd003cd7f9ab938eb1958f) 描述了 React 中的纯内容。
+- `write` 函数将在您最初调用的地方调用，并在 useEffect 中调用以进行后续调用。 所以，你不应该在渲染中调用 `write`。
+- 当一个原子最初使用 `useAtom` 时，它会调用 `read` 函数来获取初始值，这是递归过程。 如果 Provider 中存在原子值，它将被使用而不是调用 `read` 函数。
+- 一旦使用了一个原子（并存储在 Provider 中），它的值只有在更新其依赖项时才会更新（包括直接使用 useAtom 更新）。
