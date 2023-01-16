@@ -5,105 +5,105 @@ nav: 5.02
 
 ## atomWithToggle
 
-> `atomWithToggle` creates a new atom with a boolean as initial state & a setter function to toggle it.
+> `atomWithToggle` 创建一个新的原子，它以一个布尔值作为初始状态，并使用一个 setter 函数来切换它。
 
-This avoids the boilerplate of having to set up another atom just to update the state of the first.
+这避免了为了更新第一个原子的状态而必须设置另一个原子的方式。
 
 ```ts
-import { WritableAtom, atom } from 'jotai'
+import { WritableAtom, atom } from "jotai";
 
 export function atomWithToggle(
   initialValue?: boolean
 ): WritableAtom<boolean, boolean | undefined> {
   const anAtom = atom(initialValue, (get, set, nextValue?: boolean) => {
-    const update = nextValue ?? !get(anAtom)
-    set(anAtom, update)
-  })
+    const update = nextValue ?? !get(anAtom);
+    set(anAtom, update);
+  });
 
-  return anAtom as WritableAtom<boolean, boolean | undefined>
+  return anAtom as WritableAtom<boolean, boolean | undefined>;
 }
 ```
 
-An optional initial state can be provided as the first argument.
+可以提供可选的初始状态作为第一个参数。
 
-The setter function can have an optional argument to force a particular state, such as if you want to make a setActive function out of it.
+setter 函数可以有一个可选的参数来强制一个特定的状态，比如如果你想从它中创建一个 setActive 函数。
 
-Here is how it's used.
+这是它的使用方法。
 
 ```js
-import { atomWithToggle } from 'XXX'
+import { atomWithToggle } from "XXX";
 
-// will have an initial value set to true
-const isActiveAtom = atomWithToggle(true)
+// 将有一个初始值设置为 true
+const isActiveAtom = atomWithToggle(true);
 ```
 
-And in a component:
+在一个组件中：
 
 ```jsx
 const Toggle = () => {
-  const [isActive, toggle] = useAtom(isActiveAtom)
+  const [isActive, toggle] = useAtom(isActiveAtom);
 
   return (
     <>
       <button onClick={() => toggle()}>
-        isActive: {isActive ? 'yes' : 'no'}
+        isActive: {isActive ? "yes" : "no"}
       </button>
       <button onClick={() => toggle(true)}>force true</button>
       <button onClick={() => toggle(false)}>force false</button>
     </>
-  )
-}
+  );
+};
 ```
 
 ## atomWithToggleAndStorage
 
-> `atomWithToggleAndStorage` is like [`atomWithToggle`](#atom-with-toggle) but also persist the state anytime it changes in given storage using [`atomWithStorage`](../api/utils.mdx#atom-with-storage).
+> `atomWithToggleAndStorage` 类似于 [`atomWithToggle`](#atom-with-toggle)，但也可以使用 [`atomWithStorage`](../api/utils.mdx#atom-with-storage)。
 
-Here is the source:
+这是来源：
 
 ```ts
-import { WritableAtom, atom } from 'jotai'
-import { atomWithStorage } from 'jotai/utils'
+import { WritableAtom, atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 
 export function atomWithToggleAndStorage(
   key: string,
   initialValue?: boolean,
   storage?: any
 ): WritableAtom<boolean, boolean | undefined> {
-  const anAtom = atomWithStorage(key, initialValue, storage)
+  const anAtom = atomWithStorage(key, initialValue, storage);
   const derivedAtom = atom(
     (get) => get(anAtom),
     (get, set, nextValue?: boolean) => {
-      const update = nextValue ?? !get(anAtom)
-      set(anAtom, update)
+      const update = nextValue ?? !get(anAtom);
+      set(anAtom, update);
     }
-  )
+  );
 
-  return derivedAtom
+  return derivedAtom;
 }
 ```
 
-And how it's used:
+以及它是如何使用的：
 
 ```js
-import { atomWithToggleAndStorage } from 'XXX'
+import { atomWithToggleAndStorage } from "XXX";
 
-// will have an initial value set to false & get stored in localStorage under the key "isActive"
-const isActiveAtom = atomWithToggleAndStorage('isActive')
+// 将初始值设置为 false 并存储在 localStorage 中的键“isActive”下
+const isActiveAtom = atomWithToggleAndStorage("isActive");
 ```
 
-The usage in a component is also the same as [`atomWithToggle`](#atom-with-toggle).
+在组件中的用法也与 [`atomWithToggle`](#atom-with-toggle) 相同。
 
 ## atomWithCompare
 
-> `atomWithCompare` creates atom that triggers updates when custom compare function `areEqual(prev, next)` is false.
+> `atomWithCompare` 创建原子，当自定义比较函数 `areEqual(prev, next)` 为假时触发更新。
 
-This can help you avoid unwanted re-renders by ignoring state changes that don't matter to your application.
+这可以通过忽略对您的应用程序无关紧要的状态更改来帮助您避免不需要的 re-render。
 
-Note: Jotai uses `Object.is` internally to compare values when changes occur. If `areEqual(a, b)` returns false, but `Object.is(a, b)` returns true, Jotai will not trigger an update.
+注意：Jotai 在内部使用 `Object.is` 来比较发生变化时的值。 如果 `areEqual(a, b)` 返回 false，但 `Object.is(a, b)` 返回 true，则 Jotai 不会触发更新。
 
 ```ts
-import { atomWithReducer } from 'jotai/utils'
+import { atomWithReducer } from "jotai/utils";
 
 export function atomWithCompare<Value>(
   initialValue: Value,
@@ -111,92 +111,90 @@ export function atomWithCompare<Value>(
 ) {
   return atomWithReducer(initialValue, (prev: Value, next: Value) => {
     if (areEqual(prev, next)) {
-      return prev
+      return prev;
     }
 
-    return next
-  })
+    return next;
+  });
 }
 ```
 
-Here's how you'd use it to make an atom that ignores updates that are shallow-equal:
+以下是您如何使用它来创建一个忽略浅相等更新的原子：
 
 ```ts
-import { atomWithCompare } from 'XXX'
-import { shallowEquals } from 'YYY'
-import { CSSProperties } from 'react'
+import { atomWithCompare } from "XXX";
+import { shallowEquals } from "YYY";
+import { CSSProperties } from "react";
 
 const styleAtom = atomWithCompare<CSSProperties>(
-  { backgroundColor: 'blue' },
+  { backgroundColor: "blue" },
   shallowEquals
-)
+);
 ```
 
-In a component:
+在一个组件中：
 
 ```jsx
 const StylePreview = () => {
-  const [styles, setStyles] = useAtom(styleAtom)
+  const [styles, setStyles] = useAtom(styleAtom);
 
   return (
     <div>
       <div styles={styles}>Style preview</div>
 
-      {/* Clicking this button twice will only trigger one render */}
-      <button onClick={() => setStyles({ ...styles, backgroundColor: 'red' })}>
+      {/* 单击此按钮两次只会触发一次渲染 */}
+      <button onClick={() => setStyles({ ...styles, backgroundColor: "red" })}>
         Set background to red
       </button>
 
-      {/* Clicking this button twice will only trigger one render */}
+      {/* 单击此按钮两次只会触发一次渲染 */}
       <button onClick={() => setStyles({ ...styles, fontSize: 32 })}>
         Enlarge font
       </button>
     </div>
-  )
-}
+  );
+};
 ```
 
 ## atomWithRefresh
 
-> `atomWithRefresh` creates a derived atom that can be force-refreshed, by using
-> the update function.
+> `atomWithRefresh` 通过使用更新函数创建一个可以强制刷新的派生原子。
 
-This is helpful when you need to refresh asynchronous data after performing a
-side effect.
+当您需要在执行副作用后刷新异步数据时，这很有用。
 
-It can also be used to implement "pull to refresh" functionality.
+它还可以用于实现“下拉刷新”功能。
 
 ```ts
-import { atom, Getter } from 'jotai'
+import { atom, Getter } from "jotai";
 
 export function atomWithRefresh<T>(fn: (get: Getter) => T) {
-  const refreshCounter = atom(0)
+  const refreshCounter = atom(0);
 
   return atom(
     (get) => {
-      get(refreshCounter)
-      return fn(get)
+      get(refreshCounter);
+      return fn(get);
     },
     (_, set) => set(refreshCounter, (i) => i + 1)
-  )
+  );
 }
 ```
 
-Here's how you'd use it to implement an refresh-able source of data:
+以下是您将如何使用它来实现可刷新的数据源：
 
 ```js
-import { atomWithRefresh } from 'XXX'
+import { atomWithRefresh } from "XXX";
 
 const postsAtom = atomWithRefresh((get) =>
-  fetch('https://jsonplaceholder.typicode.com/posts').then((r) => r.json())
-)
+  fetch("https://jsonplaceholder.typicode.com/posts").then((r) => r.json())
+);
 ```
 
-In a component:
+在一个组件中：
 
 ```jsx
 const PostsList = () => {
-  const [posts, refreshPosts] = useAtom(postsAtom)
+  const [posts, refreshPosts] = useAtom(postsAtom);
 
   return (
     <div>
@@ -206,165 +204,155 @@ const PostsList = () => {
         ))}
       </ul>
 
-      {/* Clicking this button will re-fetch the posts */}
+      {/* 单击此按钮将重新获取帖子 */}
       <button type="button" onClick={refreshPosts}>
         Refresh posts
       </button>
     </div>
-  )
-}
+  );
+};
 ```
 
 ## atomWithListeners
 
-> `atomWithListeners` creates an atom and a hook. The hook can be called to
-> add a new listener. The hook takes as an argument a callback, and that
-> callback is called every time the atom's value is set. The hook also
-> returns a function to remove the listener.
+> `atomWithListeners` 创建一个原子和一个 hook。 可以调用 hook 来添加新的 listener。 hook 将回调作为参数，每次设置原子值时都会调用该回调。 该 hook 还返回一个函数来移除 listener。
 
-This can be useful when you want to create a component that can listen to when
-an atom's state changes without having to re-render that component with each of
-those state changes.
+当您想要创建一个可以监听原子状态何时发生变化的组件时，这会很有用，而不必在每次状态更改时都重新渲染该组件。
 
 ```ts
-import { useEffect } from 'react'
-import { atom, Getter, Setter, SetStateAction } from 'jotai'
-import { useUpdateAtom } from 'jotai/utils'
+import { useEffect } from "react";
+import { atom, Getter, Setter, SetStateAction } from "jotai";
+import { useUpdateAtom } from "jotai/utils";
 
 type Callback<Value> = (
   get: Getter,
   set: Setter,
   newVal: Value,
   prevVal: Value
-) => void
+) => void;
 
 export function atomWithListeners<Value>(initialValue: Value) {
-  const baseAtom = atom(initialValue)
-  const listenersAtom = atom(<Callback<Value>[]>[])
+  const baseAtom = atom(initialValue);
+  const listenersAtom = atom(<Callback<Value>[]>[]);
   const anAtom = atom(
     (get) => get(baseAtom),
     (get, set, arg: SetStateAction<Value>) => {
-      const prevVal = get(baseAtom)
-      set(baseAtom, arg)
-      const newVal = get(baseAtom)
+      const prevVal = get(baseAtom);
+      set(baseAtom, arg);
+      const newVal = get(baseAtom);
       get(listenersAtom).forEach((callback) => {
-        callback(get, set, newVal, prevVal)
-      })
+        callback(get, set, newVal, prevVal);
+      });
     }
-  )
+  );
   const useListener = (callback: Callback<Value>) => {
-    const setListeners = useUpdateAtom(listenersAtom)
+    const setListeners = useUpdateAtom(listenersAtom);
     useEffect(() => {
-      setListeners((prev) => [...prev, callback])
+      setListeners((prev) => [...prev, callback]);
       return () =>
         setListeners((prev) => {
-          const index = prev.indexOf(callback)
-          return [...prev.slice(0, index), ...prev.slice(index + 1)]
-        })
-    }, [setListeners, callback])
-  }
-  return [anAtom, useListener] as const
+          const index = prev.indexOf(callback);
+          return [...prev.slice(0, index), ...prev.slice(index + 1)];
+        });
+    }, [setListeners, callback]);
+  };
+  return [anAtom, useListener] as const;
 }
 ```
 
-In a component:
+在一个组件中：
 
 ```jsx
-const [countAtom, useCountListener] = atomWithListeners(0)
+const [countAtom, useCountListener] = atomWithListeners(0);
 
 function EvenCounter() {
-  const [evenCount, setEvenCount] = useState(0)
+  const [evenCount, setEvenCount] = useState(0);
 
   useCountListener(
     useCallback(
       (get, set, newVal, prevVal) => {
-        // Every time `countAtom`'s value is set, we check if its new value
-        // is even, and if it is, we increment `evenCount`.
+        // 每次设置 `countAtom` 的值时，我们检查它的新值是否为偶数
+        // 如果是，我们增加 `evenCount`。
         if (newVal % 2 === 0) {
-          setEvenCount((c) => c + 1)
+          setEvenCount((c) => c + 1);
         }
       },
       [setEvenCount]
     )
-  )
+  );
 
-  return <>Count was set to an even number {evenCount} times.</>
+  return <>Count was set to an even number {evenCount} times.</>;
 }
 ```
 
 ## atomWithBroadcast
 
-> `atomWithBroadcast` creates an atom. The atom will be shared between
-> browser tabs and frames, similar to `atomWithStorage` but with the
-> initialization limitation.
+> `atomWithBroadcast` 创建一个原子。 原子将在浏览器选项卡和框架之间共享，类似于 `atomWithStorage` 但具有初始化限制。
 
-This can be useful when you want the state to interact with each other without
-the use of localStorage and that by just using The Broadcast Channel API allows
-basic communication between browsing contexts (that is, windows, tabs, frames,
-create a component or iframes) and workers on the same origin. According to the MDN documentation receiving a message in initialization is not supported in broadcast and if we want to support that we may need to add extra stuff to atomWithBroadcast (like local storage).
+当您希望状态在不使用 localStorage 的情况下相互交互并且仅使用 Broadcast Channel API 允许浏览上下文（即窗口、选项卡、框架、创建组件或 iframe）之间进行基本通信时，这可能很有用 和同源的 worker。 根据 MDN 文档，广播不支持在初始化中接收消息，如果我们想要支持，我们可能需要向 `atomWithBroadcast` 添加额外的东西（比如本地存储）。
 
 ```tsx
-import { atom } from 'jotai'
+import { atom } from "jotai";
 
 export function atomWithBroadcast<Value>(key: string, initialValue: Value) {
-  const baseAtom = atom(initialValue)
-  const listeners = new Set<(event: MessageEvent<any>) => void>()
-  const channel = new BroadcastChannel(key)
+  const baseAtom = atom(initialValue);
+  const listeners = new Set<(event: MessageEvent<any>) => void>();
+  const channel = new BroadcastChannel(key);
   channel.onmessage = (event) => {
-    listeners.forEach((l) => l(event))
-  }
+    listeners.forEach((l) => l(event));
+  };
 
   const broadcastAtom = atom<Value, { isEvent: boolean; value: Value }>(
     (get) => get(baseAtom),
     (get, set, update) => {
-      set(baseAtom, update.value)
+      set(baseAtom, update.value);
 
       if (!update.isEvent) {
-        channel.postMessage(get(baseAtom))
+        channel.postMessage(get(baseAtom));
       }
     }
-  )
+  );
   broadcastAtom.onMount = (setAtom) => {
     const listener = (event: MessageEvent<any>) => {
-      setAtom({ isEvent: true, value: event.data })
-    }
-    listeners.add(listener)
+      setAtom({ isEvent: true, value: event.data });
+    };
+    listeners.add(listener);
     return () => {
-      listeners.delete(listener)
-    }
-  }
+      listeners.delete(listener);
+    };
+  };
   const returnedAtom = atom<Value, Value>(
     (get) => get(broadcastAtom),
     (get, set, update) => {
-      set(broadcastAtom, { isEvent: false, value: update })
+      set(broadcastAtom, { isEvent: false, value: update });
     }
-  )
-  return returnedAtom
+  );
+  return returnedAtom;
 }
-const broadAtom = atomWithBroadcast('count', 0)
+const broadAtom = atomWithBroadcast("count", 0);
 
 const ListOfThings = () => {
-  const [count, setCount] = useAtom(broadAtom)
+  const [count, setCount] = useAtom(broadAtom);
 
   return (
     <div>
       {count}
       <button onClick={() => setCount(count + 1)}>+1</button>
     </div>
-  )
-}
+  );
+};
 ```
 
 <CodeSandbox id="ugkzm0" />
 
 ## atomWithDebounce
 
-> `atomWithDebounce` helps with creating an atom where state set should be debounced.
+> `atomWithDebounce` 创建一个防抖状态集的原子。
 
-This util is useful for text search inputs, where you would like to call **functions in derived atoms only once** after waiting for a duration, instead of firing an action on every keystroke.
+此 utils 对于文本搜索输入很有用，您希望在等待一段时间后 **仅调用一次派生原子中的函数**，而不是在每次击键时触发操作。
 
 ```tsx
-import { atom, SetStateAction } from 'jotai'
+import { atom, SetStateAction } from "jotai";
 
 export default function atomWithDebounce<T>(
   initialValue: T,
@@ -373,62 +361,61 @@ export default function atomWithDebounce<T>(
 ) {
   const prevTimeoutAtom = atom<ReturnType<typeof setTimeout> | undefined>(
     undefined
-  )
+  );
 
-  // DO NOT EXPORT currentValueAtom as using this atom to set state can cause
-  // inconsistent state between currentValueAtom and debouncedValueAtom
-  const _currentValueAtom = atom(initialValue)
-  const isDebouncingAtom = atom(false)
+  // 不要导出 currentValueAtom，因为使用此原子设置状态会导致 currentValueAtom 和 debouncedValueAtom 之间的状态不一致
+  const _currentValueAtom = atom(initialValue);
+  const isDebouncingAtom = atom(false);
 
   const debouncedValueAtom = atom(
     initialValue,
     (get, set, update: SetStateAction<T>) => {
-      clearTimeout(get(prevTimeoutAtom))
+      clearTimeout(get(prevTimeoutAtom));
 
-      const prevValue = get(_currentValueAtom)
+      const prevValue = get(_currentValueAtom);
       const nextValue =
-        typeof update === 'function'
+        typeof update === "function"
           ? (update as (prev: T) => T)(prevValue)
-          : update
+          : update;
 
       const onDebounceStart = () => {
-        set(_currentValueAtom, nextValue)
-        set(isDebouncingAtom, true)
-      }
+        set(_currentValueAtom, nextValue);
+        set(isDebouncingAtom, true);
+      };
 
       const onDebounceEnd = () => {
-        set(debouncedValueAtom, nextValue)
-        set(isDebouncingAtom, false)
-      }
+        set(debouncedValueAtom, nextValue);
+        set(isDebouncingAtom, false);
+      };
 
-      onDebounceStart()
+      onDebounceStart();
 
       if (!shouldDebounceOnReset && nextValue === initialValue) {
-        onDebounceEnd()
-        return
+        onDebounceEnd();
+        return;
       }
 
       const nextTimeoutId = setTimeout(() => {
-        onDebounceEnd()
-      }, delayMilliseconds)
+        onDebounceEnd();
+      }, delayMilliseconds);
 
-      // set previous timeout atom in case it needs to get cleared
-      set(prevTimeoutAtom, nextTimeoutId)
+      // 设置上一个超时原子以防需要清除
+      set(prevTimeoutAtom, nextTimeoutId);
     }
-  )
+  );
 
-  // exported atom setter to clear timeout if needed
+  // 导出原子 setter 以在需要时清除超时
   const clearTimeoutAtom = atom(null, (get, set, _arg) => {
-    clearTimeout(get(prevTimeoutAtom))
-    set(isDebouncingAtom, false)
-  })
+    clearTimeout(get(prevTimeoutAtom));
+    set(isDebouncingAtom, false);
+  });
 
   return {
     currentValueAtom: atom((get) => get(_currentValueAtom)),
     isDebouncingAtom,
     clearTimeoutAtom,
     debouncedValueAtom,
-  }
+  };
 }
 ```
 
@@ -436,7 +423,7 @@ export default function atomWithDebounce<T>(
 
 Please note that this atom has different objectives from concurrent features in React 18 such as `useTransition` and `useDeferredValue` whose main aim is to prevent blocking of interaction with the page for expensive updates.
 
-For more info, please read this github discussion https://github.com/reactwg/react-18/discussions/41 under the section titled **"How is it different from setTimeout?"**
+For more info, please read this github discussion https://github.com/reactwg/react-18/discussions/41 under the section titled "How is it different from setTimeout?"
 
 ### Example Usage
 
@@ -445,5 +432,19 @@ The sandbox link below shows how we would use a derived atom to fetch state base
 When typing a pokemon's name in `<SearchInput>`, we do not send a get request on every letter, but only after `delayMilliseconds` has passed since the last text input.
 
 This reduces the number of backend requests to the server.
+
+### 警告
+
+请注意，此原子与 React 18 中的并发功能（例如 `useTransition` 和 `useDeferredValue` ）具有不同的目标，它们的主要目的是防止阻塞与页面的交互以进行昂贵的更新。
+
+有关详细信息，请阅读标题为“它与 setTimeout 有何不同？”部分下的此 github 讨论 https://github.com/reactwg/react-18/discussions/41
+
+### 示例
+
+下面的沙箱链接显示了我们如何使用派生原子根据 `debouncedValueAtom` 的值获取状态。
+
+当在 `<SearchInput>` 中输入一个 pokemon 的名字时，我们不会对每个字母发送 get 请求，而是仅在自上次输入文本后经过 `delayMilliseconds` 之后。
+
+这减少了对服务器的后端请求数。
 
 <CodeSandbox id="cjrz2y" />
