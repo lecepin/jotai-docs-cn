@@ -4,11 +4,11 @@ description: This doc describes window.location integration.
 nav: 4.09
 ---
 
-To deal with `window.location`, we have some functions to create atoms.
+为了处理 `window.location`，我们有一些创建原子的函数。
 
-## Install
+## 安装
 
-You have to install `jotai-location` to use this feature.
+您必须安装 `jotai-location` 才能使用此功能。
 
 ```
 yarn add jotai-location
@@ -20,42 +20,43 @@ yarn add jotai-location
 atomWithLocation(options): PrimitiveAtom
 ```
 
-`atomWithLocation` creates a new atom that links to `window.location`.
+`atomWithLocation` 创建一个链接到 `window.location` 的新原子。
 
-### Parameters
+### 参数
 
-**options** (optional): an object of options to customize the behavior of the atom
+**options**（可选）：自定义原子行为的选项对象
 
 ### Options
 
-**preloaded** (optional): preloaded location value to avoid getting location at initialization.
+**preloaded**（可选）：预加载位置值以避免在初始化时获取位置。
 
-**replace** (optional): a boolean to indicate to use `replaceState` instead of `pushState`.
+**replace**（可选）：一个布尔值，指示使用 `replaceState` 而不是 `pushState`。
 
-**getLocation** (optional): a custom function to get location value.
+**getLocation**（可选）：获取位置值的自定义函数。
 
-**applyLocation** (optional): a custom function to set location value.
+**applyLocation**（可选）：用于设置位置值的自定义函数。
 
-**subscribe** (optional): a custom function to subscribe to location change.
+**subscribe**（可选）：订阅位置变化的自定义函数。
 
-### Examples
+### 示例
 
 ```jsx
-import { useAtom } from 'jotai'
-import { atomWithLocation } from 'jotai-location'
+import { useAtom } from "jotai";
+import { atomWithLocation } from "jotai-location";
 
-const locationAtom = atomWithLocation()
+const locationAtom = atomWithLocation();
 
 const App = () => {
-  const [loc, setLoc] = useAtom(locationAtom)
+  const [loc, setLoc] = useAtom(locationAtom);
   return (
     <ul>
       <li>
         <button
           style={{
-            fontWeight: loc.pathname === '/' ? 'bold' : 'normal',
+            fontWeight: loc.pathname === "/" ? "bold" : "normal",
           }}
-          onClick={() => setLoc((prev) => ({ ...prev, pathname: '/' }))}>
+          onClick={() => setLoc((prev) => ({ ...prev, pathname: "/" }))}
+        >
           Home
         </button>
       </li>
@@ -63,17 +64,18 @@ const App = () => {
         <button
           style={{
             fontWeight:
-              loc.pathname === '/foo' && !loc.searchParams?.get('bar')
-                ? 'bold'
-                : 'normal',
+              loc.pathname === "/foo" && !loc.searchParams?.get("bar")
+                ? "bold"
+                : "normal",
           }}
           onClick={() =>
             setLoc((prev) => ({
               ...prev,
-              pathname: '/foo',
+              pathname: "/foo",
               searchParams: new URLSearchParams(),
             }))
-          }>
+          }
+        >
           Foo
         </button>
       </li>
@@ -81,23 +83,24 @@ const App = () => {
         <button
           style={{
             fontWeight:
-              loc.pathname === '/foo' && loc.searchParams?.get('bar') === '1'
-                ? 'bold'
-                : 'normal',
+              loc.pathname === "/foo" && loc.searchParams?.get("bar") === "1"
+                ? "bold"
+                : "normal",
           }}
           onClick={() =>
             setLoc((prev) => ({
               ...prev,
-              pathname: '/foo',
-              searchParams: new URLSearchParams([['bar', '1']]),
+              pathname: "/foo",
+              searchParams: new URLSearchParams([["bar", "1"]]),
             }))
-          }>
+          }
+        >
           Foo?bar=1
         </button>
       </li>
     </ul>
-  )
-}
+  );
+};
 ```
 
 ### Codesandbox
@@ -110,56 +113,54 @@ const App = () => {
 atomWithHash(key, initialValue, options): PrimitiveAtom
 ```
 
-This creates a new atom that is connected with URL hash.
-The hash must be in the URLSearchParams format.
-It's a two-way binding: changing the atom value will change the hash and
-changing the hash will change the atom value.
-This function works only with DOM.
+这将创建一个与 URL 哈希连接的新原子。
+哈希必须采用 URLSearchParams 格式。
+这是双向绑定：更改原子值将更改哈希，更改哈希将更改原子值。
+此函数仅适用于 DOM。
 
-### Parameters
+### 参数
 
-**key** (required): a unique string used as the key when syncing state with localStorage, sessionStorage, or AsyncStorage
+**key**（必需）：与 localStorage、sessionStorage 或 AsyncStorage 同步状态时用作键的唯一字符串
 
-**initialValue** (required): the initial value of the atom
+**initialValue**（必填）：原子的初始值
 
-**options** (optional): an object of options to customize the behavior of the atom
+**options**（可选）：自定义原子行为的选项对象
 
 ### Options
 
-**serialize** (optional): a custom function to serialize the atom value to the hash. Defaults to `JSON.stringify`.
+**serialize**（可选）：将原子值序列化为散列的自定义函数。 默认为 `JSON.stringify`。
 
-**deserialize** (optional): a custom function to deserialize the hash to the atom value. Defaults to `JSON.parse`.
+**deserialize**（可选）：将散列反序列化为原子值的自定义函数。 默认为 `JSON.parse`。
 
-**delayInit** (optional): delay initialization of the atom to when `onMount` is called. See [#739](https://github.com/pmndrs/jotai/issues/739#issuecomment-929260696). Defaults to `false`.
+**delayInit**（可选）：将原子的初始化延迟到调用 `onMount` 时。 请参阅 [#739](https://github.com/pmndrs/jotai/issues/739#issuecomment-929260696)。 默认为 `false`。
 
-**replaceState** (optional): when the atom value is changed, replace the current history entry instead of adding a new one. See [#660](https://github.com/pmndrs/jotai/issues/660). Defaults to `false`.
+**replaceState**（可选）：当原子值改变时，替换当前的历史条目，而不是添加新的。 请参阅 [#660](https://github.com/pmndrs/jotai/issues/660)。 默认为 `false`。
 
-**subscribe** (optional): custom hash change subscribe function
+**subscribe**（可选）：自定义哈希变化订阅函数
 
-### Examples
+### 示例
 
 ```jsx
-import { useAtom } from 'jotai'
-import { atomWithHash } from 'jotai-location'
+import { useAtom } from "jotai";
+import { atomWithHash } from "jotai-location";
 
-const countAtom = atomWithHash('count', 1)
+const countAtom = atomWithHash("count", 1);
 
 const Counter = () => {
-  const [count, setCount] = useAtom(countAtom)
+  const [count, setCount] = useAtom(countAtom);
   return (
     <div>
       <div>count: {count}</div>
       <button onClick={() => setCount((c) => c + 1)}>+1</button>
     </div>
-  )
-}
+  );
+};
 ```
 
 ### Codesandbox
 
 <CodeSandbox id="2mocd1" />
 
-### Deleting Item
+### 删除项目
 
-Please refer [atomWithStorage](../utils/atom-with-storage.mdx)
-for the usage about deleting items.
+删除项的用法请参考[atomWithStorage](../utils/atom-with-storage.mdx)。
