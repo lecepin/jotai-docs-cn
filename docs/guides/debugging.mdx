@@ -26,17 +26,17 @@ Jotai 提供了一个 Babel 和一个 SWC 插件，它会自动为每个原子�
 
 您可以使用 [React 开发工具](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi)
 检查 Jotai 状态。 实现 [useDebugValue](https://reactjs.org/docs/hooks-reference.html#usedebugvalue)
-在自定义挂钩中使用。 请记住，它仅适用于开发模式
+在自定义 hook 中使用。 请记住，它仅适用于开发模式
 （例如 `NODE_ENV === 'development'`）。
 
 ### 使用原子
 
-`useAtom` 为原子值调用 `useDebugValue`，所以如果您在 React Dev Tools 中选择消耗 Jotai 原子的组件，您会看到组件中使用的每个原子的“Atom”挂钩以及它现在具有的值 .
+`useAtom` 为原子值调用 `useDebugValue`，所以如果您在 React Dev Tools 中选择消耗 Jotai 原子的组件，您会看到组件中使用的每个原子的“Atom” hook 以及它现在具有的值 .
 
 ### 使用 AtomsDebugValue
 
 `useAtomsDebugValue` 捕获 Provider 下的组件树中的所有原子（或无提供者模式下的整个树），并且 `useDebugValue` 用于所有原子值。
-如果您在 React Dev Tools 中导航到具有 useAtomsDebugValue 的组件，我们可以看到一个自定义挂钩 `AtomsDebugValue`，它允许您查看所有原子值及其依赖项。
+如果您在 React Dev Tools 中导航到具有 useAtomsDebugValue 的组件，我们可以看到一个自定义 hook `AtomsDebugValue`，它允许您查看所有原子值及其依赖项。
 
 一个用例是将 hook 放在 `Provider` 组件下面：
 

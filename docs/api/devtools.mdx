@@ -173,7 +173,7 @@ function useAtomsSnapshot(scope?: Scope): AtomsSnapshot;
 ```
 
 它接受一个原子 `scope` 参数并将返回一个 `AtomsSnapshot`，它基本上是一个 `Map<AnyAtom, unknown>`。 您可以使用 `Map` API 迭代原子及其状态。
-这个钩子主要用于调试和 devtools 用例。
+这个 hook 主要用于调试和 devtools 用例。
 
 使用这个 hook 要小心，因为它会导致组件为所有状态更改重新渲染。
 

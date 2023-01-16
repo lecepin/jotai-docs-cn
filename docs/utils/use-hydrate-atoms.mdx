@@ -46,7 +46,7 @@ useHydrateAtoms(initialValues);
 
 每个作用域中的原子只能 hydrated 一次。 因此，如果在重新渲染期间更改了使用的初始值，则不会更新原子值。
 
-如果需要在多个范围内进行 hydrated，请使用多个 `useHydrateAtoms` 挂钩来实现。
+如果需要在多个范围内进行 hydrated，请使用多个 `useHydrateAtoms` hook 来实现。
 
 ```js
 useHydrateAtoms([
