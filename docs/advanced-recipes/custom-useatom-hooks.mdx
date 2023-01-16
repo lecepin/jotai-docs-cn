@@ -3,49 +3,49 @@ title: 自定义 useAtom hooks
 nav: 5.03
 ---
 
-This page shows the ways of creating different utility functions. Utility functions save your time on coding, and you can preserve your base atom for other usage.
+此页面显示了创建不同功能函数的方法。 utils 可以节省您的编码时间，并且您可以保留基本原子以供其他用途。
 
 ## utils
 
 ### useSelectAtom
 
 ```js
-import { useAtomValue } from 'jotai'
-import { selectAtom } from 'jotai/utils'
+import { useAtomValue } from "jotai";
+import { selectAtom } from "jotai/utils";
 
-/* if an atom is created here, please use `useMemo(() => atom(initValue), [initValue])` instead. */
+/* 如果在这里创建了一个原子，请使用 `useMemo(() => atom(initValue), [initValue])` 代替。 */
 export function useSelectAtom(anAtom, keyFn) {
-  return useAtomValue(selectAtom(anAtom, keyFn))
+  return useAtomValue(selectAtom(anAtom, keyFn));
 }
 
-// how to use it
+// 如何用它
 useSelectAtom(
   useMemo(() => atom(initValue), [initValue]),
   useCallBack((state) => state.prop, [])
-)
+);
 ```
 
-Please note that in this case `keyFn` must be stable, either define outside render or wrap with `useCallback`.
+请注意，在这种情况下，`keyFn` 必须是稳定的，要么定义外部渲染，要么用 `useCallback` 包装。
 
 ### useFreezeAtom
 
 ```js
-import { useAtom } from 'jotai'
-import { freezeAtom } from 'jotai/utils'
+import { useAtom } from "jotai";
+import { freezeAtom } from "jotai/utils";
 
 export function useFreezeAtom(anAtom) {
-  return useAtom(freezeAtom(anAtom))
+  return useAtom(freezeAtom(anAtom));
 }
 ```
 
 ### useSplitAtom
 
 ```js
-import { useAtom } from 'jotai'
-import { splitAtom } from 'jotai/utils'
+import { useAtom } from "jotai";
+import { splitAtom } from "jotai/utils";
 
 export function useSplitAtom(anAtom) {
-  return useAtom(splitAtom(anAtom))
+  return useAtom(splitAtom(anAtom));
 }
 ```
 
@@ -57,12 +57,12 @@ export function useSplitAtom(anAtom) {
 import { useAtom } from 'jotai'
 import { focusAtom } from 'jotai-optics'
 
-/* if an atom is created here, please use `useMemo(() => atom(initValue), [initValue])` instead. */
+/* 如果在这里创建了一个原子，请使用 `useMemo(() => atom(initValue), [initValue])` 代替。 */
 export function useFocusAtom(anAtom, keyFn) {
     return useAtom(focusAtom(anAtom, keyFn))
 }
 
-// how to use it
+// 如何用它
 useFocusAtom(anAtom) {
     useMemo(() => atom(initValue), [initValue]),
     useCallback((optic) => optic.prop('key'), [])
@@ -73,4 +73,4 @@ useFocusAtom(anAtom) {
 
 <CodeSandbox id="y5wef8" />
 
-Please note that in this case `keyFn` must be stable, either define outside render or wrap with `useCallback`.
+请注意，在这种情况下，`keyFn` 必须是稳定的，要么定义外部渲染，要么用 `useCallback` 包装。
