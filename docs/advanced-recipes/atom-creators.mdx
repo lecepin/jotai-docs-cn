@@ -419,20 +419,6 @@ export default function atomWithDebounce<T>(
 }
 ```
 
-### Caveat
-
-Please note that this atom has different objectives from concurrent features in React 18 such as `useTransition` and `useDeferredValue` whose main aim is to prevent blocking of interaction with the page for expensive updates.
-
-For more info, please read this github discussion https://github.com/reactwg/react-18/discussions/41 under the section titled "How is it different from setTimeout?"
-
-### Example Usage
-
-The sandbox link below shows how we would use a derived atom to fetch state based on the value of `debouncedValueAtom`.
-
-When typing a pokemon's name in `<SearchInput>`, we do not send a get request on every letter, but only after `delayMilliseconds` has passed since the last text input.
-
-This reduces the number of backend requests to the server.
-
 ### 警告
 
 请注意，此原子与 React 18 中的并发功能（例如 `useTransition` 和 `useDeferredValue` ）具有不同的目标，它们的主要目的是防止阻塞与页面的交互以进行昂贵的更新。

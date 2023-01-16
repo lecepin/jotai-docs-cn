@@ -46,7 +46,7 @@ const Page = () => {
 
 这意味着如果用户的 `storedValue` 与 `initialValue` 不同，那么最初作为 HTML 提供给用户浏览器的内容与 React 在 rehydration 过程中所期望的内容之间将存在不匹配。
 
-针对此问题的建议解决方法是通过将内容包装在[自定义 `<ClientOnly>` 包装器](https://www.joshwcomeau.com/react/the-perils-of-rehydration/#abstractions），仅在 rehydration 后呈现。 替代解决方案在技术上是可行的，但在将 `initialValue` 交换为 `storedValue` 时需要短暂的“闪烁”，这可能会导致不愉快的用户体验，因此建议采用此解决方案。
+针对此问题的建议解决方法是通过将内容包装在 [自定义`<ClientOnly>`包装器](https://www.joshwcomeau.com/react/the-perils-of-rehydration/#abstractions），仅在 rehydration 后呈现。 替代解决方案在技术上是可行的，但在将 `initialValue` 交换为 `storedValue` 时需要短暂的“闪烁”，这可能会导致不愉快的用户体验，因此建议采用此解决方案。
 
 ## 从存储中删除项目
 

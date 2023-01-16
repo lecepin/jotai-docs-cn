@@ -2,10 +2,6 @@
 title: loadable
 ---
 
-If you don't want async atoms to suspend or throw to an error boundary (for example, for finer-grained control of loading and error logic), you can use the `loadable` util.
-
-It would work the same way for any atom. Simply wrap your atoms with the `loadable` util. It returns a value with one of three states: `loading`, `hasData` and `hasError`.
-
 如果您不希望异步原子 suspend 或抛出错误边界（例如，为了更细粒度地控制加载和错误逻辑），您可以使用 `loadable` 。
 
 它对任何原子都以同样的方式工作。 只需使用 `loadable` 包装您的原子。 它返回具有以下三种状态之一的值：`loading`、`hasData` 和 `hasError`。
