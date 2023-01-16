@@ -4,9 +4,9 @@ description: This doc describes Devtools for Jotai.
 nav: 2.03
 ---
 
-## Install
+## 安装
 
-You have to install `jotai-devtools` to use this feature.
+您必须安装 `jotai-devtools` 才能使用此功能。
 
 ```
 npm install jotai-devtools
@@ -16,124 +16,124 @@ yarn add jotai-devtools
 
 ## useAtomsDebugValue
 
-`useAtomsDebugValue` is a React hook that will show all atom values in React Devtools.
+`useAtomsDebugValue` 是一个 React hook，它将在 React Devtools 中显示所有原子值。
 
 ```ts
 function useAtomsDebugValue(options?: {
-  scope?: Scope
-  enabled?: boolean
-}): void
+  scope?: Scope;
+  enabled?: boolean;
+}): void;
 ```
 
-Internally, it uses `useDebugValue` which is only effective in DEV mode.
-It will catch all atoms that are accessible from the place the hook is located.
+在内部，它使用仅在 DEV 模式下有效的 `useDebugValue`。
+它将捕获所有可从 hook 所在位置访问的原子。
 
-### Example
+### 示例
 
 ```jsx
-import { useAtomsDebugValue } from 'jotai-devtools'
+import { useAtomsDebugValue } from "jotai-devtools";
 
-const textAtom = atom('hello')
-textAtom.debugLabel = 'textAtom'
+const textAtom = atom("hello");
+textAtom.debugLabel = "textAtom";
 
-const lenAtom = atom((get) => get(textAtom).length)
-lenAtom.debugLabel = 'lenAtom'
+const lenAtom = atom((get) => get(textAtom).length);
+lenAtom.debugLabel = "lenAtom";
 
 const TextBox = () => {
-  const [text, setText] = useAtom(textAtom)
-  const [len] = useAtom(lenAtom)
+  const [text, setText] = useAtom(textAtom);
+  const [len] = useAtom(lenAtom);
   return (
     <span>
       <input value={text} onChange={(e) => setText(e.target.value)} />({len})
     </span>
-  )
-}
+  );
+};
 
 const DebugAtoms = () => {
-  useAtomsDebugValue()
-  return null
-}
+  useAtomsDebugValue();
+  return null;
+};
 
 const App = () => (
   <Provider>
     <DebugAtoms />
     <TextBox />
   </Provider>
-)
+);
 ```
 
 <CodeSandbox id="vvp12f" />
 
 ## useAtomDevtools
 
-`useAtomDevtools` is a React hook that manages ReduxDevTools integration for a particular atom.
+`useAtomDevtools` 是一个 React hook，用于管理特定原子的 ReduxDevTools 集成。
 
 ```ts
 function useAtomDevtools<Value>(
   anAtom: WritableAtom<Value, Value>,
   options?: {
-    name?: string
-    scope?: Scope
-    enabled?: boolean
+    name?: string;
+    scope?: Scope;
+    enabled?: boolean;
   }
-): void
+): void;
 ```
 
-The `useAtomDevtools` hook accepts a generic type parameter (mirroring the type stored in the atom). Additionally, the hook accepts two invocation parameters, `anAtom` and `name`.
-`anAtom` is the atom that will be attached to the devtools instance. `name` is an optional parameter that defines the debug label for the devtools instance. If `name` is undefined, `atom.debugLabel` will be used instead.
+`useAtomDevtools` hook 接受一个泛型类型参数（镜像存储在原子中的类型）。 此外，该 hook 接受两个调用参数，`anAtom` 和 `name`。
+`anAtom` 是将附加到 devtools 实例的原子。 `name` 是一个可选参数，用于定义 devtools 实例的调试标签。 如果 `name` 未定义，将使用 `atom.debugLabel` 代替。
 
-### Example
+### 示例
 
 ```ts
-import { useAtomDevtools } from 'jotai-devtools'
+import { useAtomDevtools } from "jotai-devtools";
 
-// The interface for the type stored in the atom.
+// 存储在原子中的类型的接口。
 export interface Task {
-  label: string
-  complete: boolean
+  label: string;
+  complete: boolean;
 }
 
-// The atom to debug.
-export const tasksAtom = atom<Task[]>([])
+// 要调试的原子。
+export const tasksAtom = atom<Task[]>([]);
 
-// If the useAtomDevtools name parameter is undefined, this value will be used instead.
-tasksAtom.debugLabel = 'Tasks'
+// 如果 useAtomDevtools name 参数未定义，将使用此值代替。
+tasksAtom.debugLabel = "Tasks";
 
 export const useTasksDevtools = () => {
-  // The hook can be called simply by passing an atom for debugging.
-  useAtomDevtools(tasksAtom)
+  // hook 可以简单地通过传递一个用于调试的原子来调用。
+  useAtomDevtools(tasksAtom);
 
-  // Specify a custom type parameter
-  useAtomDevtools<Task[]>(tasksAtom)
+  // 指定自定义类型参数
+  useAtomDevtools<Task[]>(tasksAtom);
 
-  // You can attach two devtools instances to the same atom and differentiate them with custom names.
-  useAtomDevtools(tasksAtom, 'Tasks (Instance 1)')
-  useAtomDevtools(tasksAtom, 'Tasks (Instance 2)')
-}
+  // 您可以将两个 devtools 实例附加到同一个原子，并使用自定义名称来区分它们。
+  useAtomDevtools(tasksAtom, "Tasks (Instance 1)");
+  useAtomDevtools(tasksAtom, "Tasks (Instance 2)");
+};
 ```
 
 ## useAtomsDevtools
 
-⚠️ Note: This hook is experimental (feedbacks are welcome) and only works in a `process.env.NODE_ENV !== 'production'` environment.
+⚠️ 注意：这个 hook 是实验性的（欢迎提供反馈）并且只能在 `process.env.NODE_ENV !== 'production'` 环境中工作。
 
-`useAtomsDevtools` is a catch-all version of `useAtomDevtools` where it shows all atoms in the store instead of showing a specific one.
+`useAtomsDevtools` 是 `useAtomDevtools` 的包罗万象的版本，它显示 store 中的所有原子，而不是显示特定的原子。
 
 ```ts
 function useAtomsDevtools(
   name: string,
   options?: {
-    scope?: Scope
-    enabled?: boolean
+    scope?: Scope;
+    enabled?: boolean;
   }
-): void
+): void;
 ```
 
-It takes a `name` parameter that is needed for naming the Redux devtools instance and a `scope` parameter if the hook is used for a specific scope of atoms.
+它需要一个命名 Redux devtools 实例所需的 `name` 参数和一个 `scope` 参数（如果 hook 用于特定范围的原子）。
 
-As a limitation for this API, we need to put `useAtomsDevtools` in a component where the consumed atoms should be in a lower place of the React tree than that component (`AtomsDevtools` in the below example).
-`AtomsDevtools` component can be considered as a best practice for our apps.
+作为此 API 的一个限制，我们需要将 `useAtomsDevtools` 放在一个组件中，其中消耗的 atom 应该位于 React 树的较低位置而不是该组件（下例中的 `AtomsDevtools`）。
+`AtomsDevtools` 组件可以被视为我们应用程序的最佳实践。
 
-### Example
+### 示例
 
 ```jsx
 const countAtom = atom(0);
@@ -164,27 +164,27 @@ export default function App()  {
 
 ## useAtomsSnapshot
 
-⚠️ Note: This hook only works in a `process.env.NODE_ENV !== 'production'` environment. And it returns a static empty value in production.
+⚠️ 注意：此 hook 仅适用于 `process.env.NODE_ENV !== 'production'` 环境。 它在生产中返回一个静态的空值。
 
-`useAtomsSnapshot` takes a snapshot of the currently mounted atoms and their state.
+`useAtomsSnapshot` 获取当前安装的原子及其状态的快照。
 
 ```ts
-function useAtomsSnapshot(scope?: Scope): AtomsSnapshot
+function useAtomsSnapshot(scope?: Scope): AtomsSnapshot;
 ```
 
-It accepts an atom `scope` parameter and will return an `AtomsSnapshot`, which is basically a `Map<AnyAtom, unknown>`. You can use the `Map` API to iterate over atoms and their state.
-This hook is primarily meant for debugging and devtools use cases.
+它接受一个原子 `scope` 参数并将返回一个 `AtomsSnapshot`，它基本上是一个 `Map<AnyAtom, unknown>`。 您可以使用 `Map` API 迭代原子及其状态。
+这个钩子主要用于调试和 devtools 用例。
 
-Be careful using this hook because it will cause the component to re-render for all state changes.
+使用这个 hook 要小心，因为它会导致组件为所有状态更改重新渲染。
 
-### Example
+### 示例
 
 ```jsx
-import { Provider } from 'jotai'
-import { useAtomsSnapshot } from 'jotai-devtools'
+import { Provider } from "jotai";
+import { useAtomsSnapshot } from "jotai-devtools";
 
 const RegisteredAtoms = () => {
-  const atoms = useAtomsSnapshot()
+  const atoms = useAtomsSnapshot();
 
   return (
     <div>
@@ -195,53 +195,54 @@ const RegisteredAtoms = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
 const App = () => (
   <Provider>
     <RegisteredAtoms />
   </Provider>
-)
+);
 ```
 
 ## useGotoAtomsSnapshot
 
-⚠️ Note: This hook only works in a `process.env.NODE_ENV !== 'production'` environment. And it works like an empty function in the production environment.
+⚠️ 注意：此 hook 仅适用于 `process.env.NODE_ENV !== 'production'` 环境。 它在生产环境中就像一个空函数。
 
-`useGotoAtomsSnapshot` will update the current Jotai state to match the passed snapshot.
+`useGotoAtomsSnapshot` 将更新当前的 Jotai 状态以匹配传递的快照。
 
 ```ts
 function useGotoAtomsSnapshot(
   scope?: Scope
-): (values: Iterable<readonly [AnyAtom, unknown]>) => void
+): (values: Iterable<readonly [AnyAtom, unknown]>) => void;
 ```
 
-This hook returns a callback, which takes a `snapshot` from the `useAtomsSnapshot` hook and will update the Jotai state. It accepts an atom `scope` parameter and will error if the atoms have mixed scopes.
-This hook is primarily meant for debugging and devtools use cases.
+这个 hook 返回一个回调，它从 `useAtomsSnapshot` hook 中获取一个 `snapshot` 并将更新 Jotai 状态。 它接受一个原子 `scope` 参数，如果原子具有混合范围，则会出错。
+这个 hook 主要用于调试和 devtools 用例。
 
-### Example
+### 示例
 
 ```jsx
-import { Provider } from 'jotai'
-import { useAtomsSnapshot, useGotoAtomsSnapshot } from 'jotai-devtools'
+import { Provider } from "jotai";
+import { useAtomsSnapshot, useGotoAtomsSnapshot } from "jotai-devtools";
 
-const petAtom = atom('cat')
-const colorAtom = atom('blue')
+const petAtom = atom("cat");
+const colorAtom = atom("blue");
 
 const UpdateSnapshot = () => {
-  const snapshot = useAtomsSnapshot()
-  const goToSnapshot = useGotoAtomsSnapshot()
+  const snapshot = useAtomsSnapshot();
+  const goToSnapshot = useGotoAtomsSnapshot();
   return (
     <button
       onClick={() => {
-        const newSnapshot = new Map(snapshot)
-        newSnapshot.set(petAtom, 'dog')
-        newSnapshot.set(colorAtom, 'green')
-        goToSnapshot(newSnapshot)
-      }}>
+        const newSnapshot = new Map(snapshot);
+        newSnapshot.set(petAtom, "dog");
+        newSnapshot.set(colorAtom, "green");
+        goToSnapshot(newSnapshot);
+      }}
+    >
       Go to snapshot
     </button>
-  )
-}
+  );
+};
 ```

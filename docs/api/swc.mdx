@@ -4,54 +4,54 @@ description: This doc describes SWC plugins for Jotai.
 nav: 2.05
 ---
 
-⚠️ Note: These plugins are experimental. Feedback is welcome in the [Github repo](https://github.com/pmndrs/swc-jotai). Please file issues in the separate repo instead of `jotai` repo.
+⚠️ 注意：这些插件是实验性的。 欢迎在 [Github 存储库](https://github.com/pmndrs/swc-jotai) 中提供反馈。 请在单独的 repo 而不是 `jotai` repo 中提交问题。
 
 ## @swc-jotai/debug-label
 
-Jotai is based on object references and not keys (like Recoil). This means there's no identifier for atoms. To identify atoms, it's possible to add a `debugLabel` to an atom, which can be found in React devtools.
+Jotai 基于对象引用而不是键（如 Recoil）。 这意味着原子没有标识符。 要识别原子，可以将 `debugLabel` 添加到原子，这可以在 React devtools 中找到。
 
-However, this can quickly become cumbersome to add a `debugLabel` to every atom.
+但是，如果要为每个原子添加一个 `debugLabel`，这很快就会变得很麻烦。
 
-This `SWC` plugin adds a `debugLabel` to every atom, based on its identifier.
+这个 `SWC` 插件根据每个原子的标识符向每个原子添加一个 `debugLabel`。
 
-The plugin transforms this code:
-
-```js
-export const countAtom = atom(0)
-```
-
-Into:
+该插件转换此代码：
 
 ```js
-export const countAtom = atom(0)
-countAtom.debugLabel = 'countAtom'
+export const countAtom = atom(0);
 ```
 
-Default exports are also handled, based on the file naming:
+进入:
 
 ```js
-// countAtom.ts
-export default atom(0)
+export const countAtom = atom(0);
+countAtom.debugLabel = "countAtom";
 ```
 
-Which transform into:
+还根据文件命名处理默认导出：
 
 ```js
 // countAtom.ts
-const countAtom = atom(0)
-countAtom.debugLabel = 'countAtom'
-export default countAtom
+export default atom(0);
 ```
 
-### Usage
+其中转化为：
 
-Install it with:
+```js
+// countAtom.ts
+const countAtom = atom(0);
+countAtom.debugLabel = "countAtom";
+export default countAtom;
+```
+
+### 使用
+
+安装它：
 
 ```sh
 npm install --save-dev @swc-jotai/debug-label
 ```
 
-You can add the plugin to `.swcrc`:
+您可以将插件添加到 `.swcrc` 中：
 
 ```json
 {
@@ -63,31 +63,31 @@ You can add the plugin to `.swcrc`:
 }
 ```
 
-Or you can use the plugin with the [experimental SWC plugins feature](https://nextjs.org/docs/advanced-features/compiler#swc-plugins-experimental) in Next.js.
+或者您可以在 Next.js 中使用带有[实验性 SWC 插件功能](https://nextjs.org/docs/advanced-features/compiler#swc-plugins-experimental) 的插件。
 
 ```js
 module.exports = {
   experimental: {
-    swcPlugins: [['@swc-jotai/debug-label', {}]],
+    swcPlugins: [["@swc-jotai/debug-label", {}]],
   },
-}
+};
 ```
 
-Examples can be found below.
+可以在下面找到示例。
 
 ## @swc-jotai/react-refresh
 
-This plugin adds support for React Refresh for Jotai atoms. This makes sure that state isn't reset, when developing using React Refresh.
+这个插件增加了对 Jotai 原子的 React Refresh 的支持。 这确保在使用 React Refresh 开发时不会重置状态。
 
-### Usage
+### 示例
 
-Install it with:
+安装它：
 
 ```sh
 npm install --save-dev @swc-jotai/react-refresh
 ```
 
-You can add the plugin to `.swcrc`:
+您可以将插件添加到 `.swcrc` 中：
 
 ```json
 {
@@ -99,34 +99,34 @@ You can add the plugin to `.swcrc`:
 }
 ```
 
-You can use the plugin with the [experimental SWC plugins feature](https://nextjs.org/docs/advanced-features/compiler#swc-plugins-experimental) in Next.js.
+您可以在 Next.js 中使用具有[实验性 SWC 插件功能](https://nextjs.org/docs/advanced-features/compiler#swc-plugins-experimental) 的插件。
 
 ```js
 module.exports = {
   experimental: {
-    swcPlugins: [['@swc-jotai/react-refresh', {}]],
+    swcPlugins: [["@swc-jotai/react-refresh", {}]],
   },
-}
+};
 ```
 
-Examples can be found below.
+可以在下面找到示例。
 
-## Custom atom names
+## 自定义原子名称
 
-You can enable the plugins for your custom atoms. You can supply them to the plugins like below:
+您可以为自定义原子启用插件。 您可以将它们提供给如下插件：
 
 ```js
 module.exports = {
   experimental: {
     swcPlugins: [
-      ['@swc-jotai/debug-label', { atomNames: ['customAtom'] }],
-      ['@swc-jotai/react-refresh', { atomNames: ['customAtom'] }],
+      ["@swc-jotai/debug-label", { atomNames: ["customAtom"] }],
+      ["@swc-jotai/react-refresh", { atomNames: ["customAtom"] }],
     ],
   },
-}
+};
 ```
 
-## Examples
+## 示例
 
 ### Next.js
 
